@@ -1,0 +1,1083 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex, nofollow"><title>Python near-infrared cameras never left the lab</title><style>:root{--marl:#ECEFE8;--marl-2:#E2E7DE;--ink:#16251F;--ink-2:#4A5A52;--slough:#0D211E;--slough-2:#16302B;--line:#2A4741;--laser:#FF4D6D;--gold:#D9B648;--font:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Inter,system-ui,sans-serif}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--marl);color:var(--ink);font:400 17.5px/1.62 var(--font)}
+a{color:#0E6B66;text-underline-offset:2px}
+a:focus-visible,button:focus-visible,input:focus-visible{outline:3px solid var(--laser);outline-offset:3px;border-radius:6px}
+
+.hero{position:relative;min-height:min(88vh,800px);background:var(--slough);color:#E8F0EA;overflow:hidden;display:flex;align-items:flex-end}
+.hero canvas{position:absolute;inset:0;width:100%;height:100%;cursor:ew-resize;touch-action:pan-y}
+.hero-text{position:relative;max-width:760px;padding:0 max(20px,5vw) clamp(28px,6vh,60px);pointer-events:none}
+.hero h1{font-size:clamp(34px,5.6vw,66px);line-height:1.02;letter-spacing:-.03em;font-weight:800;margin:0 0 16px;text-shadow:0 2px 24px rgba(0,0,0,.5)}
+.hero .lede{font-size:clamp(15.5px,1.4vw,18px);color:#D2E0D8;margin:0 0 10px;text-shadow:0 1px 12px rgba(0,0,0,.6)}
+.hero .lede strong{color:#fff}
+.hero .hint{font-size:14px;color:#9FB7AC;margin:0}
+
+main{padding-bottom:70px}
+.doc{max-width:760px;margin:0 auto;padding:30px 20px 0}
+.doc h2{font-size:clamp(26px,3.6vw,38px);line-height:1.1;letter-spacing:-.02em;font-weight:760;margin:72px 0 14px}
+.doc h3{font-size:21px;line-height:1.25;margin:44px 0 8px}
+.doc p,.doc li{color:#253731}
+.doc ul,.doc ol{padding-left:22px}
+.doc li{margin:5px 0}
+.doc strong{font-weight:680;color:var(--ink)}
+.doc table{border-collapse:collapse;width:100%;font-size:14.5px;margin:16px 0;display:block;overflow-x:auto}
+.doc th,.doc td{text-align:left;vertical-align:top;padding:8px 10px;border-bottom:1px solid #D3DAD0;min-width:110px}
+.doc th{background:var(--marl-2)}
+.doc hr{border:0;border-top:1px solid #D3DAD0;margin:40px 0}
+
+/* pictures break out of the text column */
+.fig{margin:28px 0 8px;width:min(1100px,calc(100vw - 28px));position:relative;left:50%;transform:translateX(-50%)}
+.stage{background:var(--slough);border-radius:18px;overflow:hidden;color:#DCE7E0}
+.stage canvas{display:block;width:100%;touch-action:pan-y}
+.stage.tall canvas{height:clamp(440px,58vw,600px)}
+.stage.mid canvas{height:clamp(340px,42vw,460px)}
+.stage.short canvas{height:clamp(280px,32vw,360px)}
+.cap{font-size:14.5px;color:var(--ink-2);margin:10px 6px 0;max-width:760px}
+.bar{display:flex;flex-wrap:wrap;gap:10px;align-items:center;padding:12px 14px;background:var(--slough-2);border-top:1px solid var(--line)}
+.bar .grow{flex:1}
+.seg{display:inline-flex;background:#0B1B18;border:1px solid var(--line);border-radius:12px;padding:3px}
+.seg button{font:600 14px/1 var(--font);color:#CFE0D7;background:transparent;border:0;border-radius:9px;padding:10px 12px;cursor:pointer;min-height:40px}
+.seg button[aria-pressed="true"]{background:#E8F0EA;color:var(--slough)}
+.readout{font-size:14px;color:#9FB7AC;font-variant-numeric:tabular-nums}
+.readout b{color:#fff;font-weight:650}
+.legend{display:flex;flex-wrap:wrap;gap:12px;font-size:13.5px;color:#AFC4BA}
+.legend i{display:inline-block;width:11px;height:11px;border-radius:3px;margin-right:6px;vertical-align:-1px}
+label.slide{display:flex;align-items:center;gap:10px;font-size:14px;color:#CFE0D7}
+input[type=range]{accent-color:var(--gold);width:min(260px,50vw)}
+
+/* press claims: the claim gets struck, the measured condition opens */
+.claims{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px;margin:18px 0}
+.claim{background:var(--slough);color:#E8F0EA;border-radius:16px;padding:18px 16px 16px}
+.said{font-size:28px;font-weight:800;letter-spacing:-.02em;text-decoration:line-through;text-decoration-color:transparent;text-decoration-thickness:3px;transition:text-decoration-color .6s .4s}
+.claim.in .said{text-decoration-color:var(--laser)}
+.was{font-size:14.5px;line-height:1.5;color:#C9D8D0;max-height:0;opacity:0;overflow:hidden;transition:max-height .8s 1s,opacity .8s 1s,margin .8s 1s}
+.claim.in .was{max-height:220px;opacity:1;margin-top:10px}
+.claim:nth-child(2) .said,.claim:nth-child(2) .was{transition-delay:.9s,1.5s}
+.claim:nth-child(3) .said,.claim:nth-child(3) .was{transition-delay:1.4s,2s}
+
+/* timeline */
+.tl{list-style:none;margin:22px 0;padding:0 0 0 22px;position:relative}
+.tl::before{content:"";position:absolute;left:6px;top:6px;bottom:6px;width:2px;background:#C9D2C6}
+.tl li{position:relative;padding:6px 0 12px 12px;opacity:0;transform:translateY(8px);transition:opacity .5s,transform .5s}
+.tl.in li{opacity:1;transform:none}
+.tl li::before{content:"";position:absolute;left:-22px;top:12px;width:12px;height:12px;border-radius:50%;background:#9FB7AC;border:2px solid var(--marl)}
+.tl li.research::before{background:#0E6B66}.tl li.money::before{background:var(--gold)}.tl li.org::before{background:#8A8F87}.tl li.live::before{background:var(--laser);box-shadow:0 0 0 4px rgba(255,77,109,.2)}
+.tl .when{display:block;font-weight:750;font-size:15px}
+.tl .what{display:block;color:#36463F;font-size:15.5px}
+.tl li:nth-child(2){transition-delay:.12s}.tl li:nth-child(3){transition-delay:.24s}.tl li:nth-child(4){transition-delay:.36s}.tl li:nth-child(5){transition-delay:.48s}.tl li:nth-child(6){transition-delay:.6s}.tl li:nth-child(7){transition-delay:.72s}.tl li:nth-child(8){transition-delay:.84s}.tl li:nth-child(9){transition-delay:.96s}.tl li:nth-child(10){transition-delay:1.08s}.tl li:nth-child(11){transition-delay:1.2s}.tl li:nth-child(12){transition-delay:1.32s}
+
+footer{max-width:760px;margin:40px auto 0;padding:24px 20px 60px;border-top:1px solid #D3DAD0;font-size:14px;color:var(--ink-2)}
+@media (max-width:640px){body{font-size:16.5px}.seg button{padding:10px 9px;font-size:13.5px}.said{font-size:24px}}
+@media (prefers-reduced-motion:reduce){.tl li,.was,.said{transition:none}}
+</style></head><body>
+<header class="hero"><canvas id="heroCv" aria-hidden="true"></canvas><div class="hero-text"><h1>Python near-infrared cameras never left the lab</h1>
+<p class="lede">A loose group of people, not a company, did this research. Python skin stays dark in near-infrared light, and live plants turn bright. The idea never left the lab. For the nest hunt, it may still help one witness.</p><p class="hint">Drag across the picture: the left side is what your eye sees, the right side is an 850 nm camera.</p></div></header>
+<main><article class="doc"><p>A loose group of people, not a company, did Florida's near-infrared (NIR) python detection research. Optics professor Ron Driggers led it from 2018 to 2021. He then held a UCF professorship and a part-time post at imec USA, a nonprofit research institute in Kissimmee. His partners were imec staff in Florida and Belgium, UCF students and UF python biologist Frank Mazzotti. The last partner was Extended Reality Systems, a one-man Florida LLC that the state dissolved in 2021. Embry-Riddle ran a separate drone study. The papers prove one thing well: python skin stays dark in NIR light, and live plants turn bright. They prove much less about detection. Observers who looked at still images found pythons at <strong>1.20 to 1.34 times</strong> the range of a color camera. A drone test raised hits at 15 m from <strong>0.59 to 0.94</strong>. Every study used one to three pythons, mostly dead, in a box, grass fields or on one levee. Since 2021, no product, patent or field program followed. imec's Florida center turned to superconducting electronics, and the team scattered. Florida programs still find pythons by eye, with scout snakes, dogs and lure cameras. For Killer Conservation's nest hunt, the news is mixed (judgment). No NIR camera sees a python coiled under cover. But live grass glows in NIR light and crushed or dying grass does not. So an NIR band could help the camera witness spot the disturbed patch at a nest opening. Nobody has tested that yet.</p><h2>Warnings before you use these numbers</h2>
+<ul>
+<li><strong>No field rate exists.</strong> No study measured NIR detection of live, free-ranging pythons in the Everglades. All numbers come from one to three pythons, mostly dead and thawed.</li>
+<li><strong>Most numbers measure people, not machines.</strong> Observers clicked on still images or short videos. The only published automatic NIR result comes from 15 test images of one dead python.</li>
+<li><strong>Press figures mix conditions.</strong> "20% farther", "1.3 times" and "35% better" each come from one narrow condition. The press table below shows each one.</li>
+<li><strong>Two range figures are extrapolations (judgment).</strong> Some 50% detection ranges lie beyond the farthest python that the team placed. They come from a fitted curve, not from a measurement.</li>
+<li><strong>NIR finds snakes, not species.</strong> Driggers said: "It allows us to detect snakes, not classify species of snakes" (<a href="https://wildlife.org/looking-beyond-the-visible-spectrum-to-detect-pythons/" target="_blank" rel="noopener">The Wildlife Society 2019</a>). In NIR, a python also looks like a shadow (<a href="https://stars.library.ucf.edu/etd2023/159/" target="_blank" rel="noopener">Hewitt 2024</a>).</li>
+<li><strong>The newest work is not verified.</strong> The researchers read only the library record of Li Zhang's 2026 dissertation, not its text.</li>
+</ul>
+<h2>Five core texts were read in full, and the newest was not</h2>
+<p>The research line is small. It holds two 2019 papers, one 2021 paper, one 2023 drone paper and one 2024 dissertation. The researchers read all five in full. Some reads came from author copies, and some figures did not load. The table shows how each text was read. Facts from texts that the researchers did not read in full carry that label in this report.</p>
+<table>
+<thead>
+<tr>
+<th>Text</th>
+<th>How the researchers read it</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Driggers et al. 2019, Applied Optics 58(13), reflectivity study</td>
+<td><strong>Full text</strong>, from the published PDF that co-author Wouter Charle posted (<a href="https://www.researchgate.net/publication/332795937_Burmese_python_target_reflectivity_compared_to_natural_Florida_foliage_background_reflectivity" target="_blank" rel="noopener">ResearchGate</a>). The publisher copy is paywalled.</td>
+</tr>
+<tr>
+<td>Vaca-Castano et al. 2019, SPIE 10986, camera design and algorithms</td>
+<td><strong>Full text of the author manuscript</strong>, not the printed version (<a href="https://www.researchgate.net/publication/333106202_Multispectral_camera_design_and_algorithms_for_Python_snake_detection_in_the_Florida_Everglades" target="_blank" rel="noopener">ResearchGate</a>). Classifier numbers come from figure images. The printed text can differ.</td>
+</tr>
+<tr>
+<td>Hewitt et al. 2021, Applied Optics 60(17), NIR against visible</td>
+<td><strong>Full open-access text and all five tables</strong> (<a href="https://opg.optica.org/ao/fulltext.cfm?uri=ao-60-17-5066" target="_blank" rel="noopener">Optica</a>). Figure images did not load.</td>
+</tr>
+<tr>
+<td>Cerreta et al. 2023, Journal of Aviation/Aerospace Education &amp; Research 32(1), drone study</td>
+<td><strong>Full open-access PDF</strong> (<a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">ERAU Scholarly Commons</a>)</td>
+</tr>
+<tr>
+<td>Hewitt 2024, UCF dissertation, chair Kyle Renshaw</td>
+<td><strong>Full text</strong>, figures not viewed (<a href="https://stars.library.ucf.edu/etd2023/159/" target="_blank" rel="noopener">UCF STARS</a>)</td>
+</tr>
+<tr>
+<td>Iyer, Raval and Pandya 2025, International Journal of Computers 10</td>
+<td><strong>Full text</strong> (<a href="https://iaras.org/home/cijc/applying-artificial-intelligence-machine-learning-and-prompt-engineering-for-image-recognition-of-burmese-pythons" target="_blank" rel="noopener">IARAS</a>). It uses color photos, not NIR.</td>
+</tr>
+<tr>
+<td>Guzy et al. 2023, NeoBiota 80, USGS-led python synthesis</td>
+<td>Searched by keyword, not read cover to cover (<a href="https://neobiota.pensoft.net/article/90439/" target="_blank" rel="noopener">NeoBiota</a>)</td>
+</tr>
+<tr>
+<td>Hewitt et al. SPIE papers, 2022 and 2024</td>
+<td><strong>Abstracts only</strong> (<a href="https://www.spiedigitallibrary.org/conference-proceedings-of-spie/12106/1210604/Sensor-optimization-of-camera-direction-for-time-limited-search-performance/10.1117/12.2618124.short" target="_blank" rel="noopener">SPIE 2022</a>; <a href="https://electronicimaging.spiedigitallibrary.org/conference-proceedings-of-spie/13045/1304505/Trade-study-of-moving-sensor-optimization-model/10.1117/12.3013014.full" target="_blank" rel="noopener">SPIE 2024</a>). The 2024 dissertation summarizes them.</td>
+</tr>
+<tr>
+<td>Earlier Embry-Riddle version, now withdrawn</td>
+<td><strong>Abstract only</strong> (<a href="https://commons.erau.edu/publication/1779/" target="_blank" rel="noopener">ERAU</a>)</td>
+</tr>
+<tr>
+<td>Li Zhang 2026, UCF dissertation, chair Kyle Renshaw</td>
+<td><strong>Library record only. Not verified.</strong> (<a href="https://stars.library.ucf.edu/gradstudies_etd_2026/217" target="_blank" rel="noopener">UCF STARS</a>)</td>
+</tr>
+<tr>
+<td>Miller et al. 2025, Remote Sensing in Ecology and Conservation, camera-trap AI</td>
+<td><strong>USGS summary only</strong>; the publisher page blocked access (<a href="https://pubs.usgs.gov/publication/70266494" target="_blank" rel="noopener">USGS</a>)</td>
+</tr>
+<tr>
+<td>Romer and Miller 2026, UF machine-learning study</td>
+<td><strong>News reports only</strong>; the journal is not named (<a href="https://www.yahoo.com/news/science/articles/floridas-python-problem-defied-solutions-090259062.html" target="_blank" rel="noopener">Palm Beach Post via Yahoo</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>Two Hewitt studies from the 2024 dissertation went to journals (Optics Continuum and Optical Engineering). One search for each found no published version.</p>
+<h2>One nonprofit lab, three universities and a one-man firm did the work</h2>
+<p>The answer to "company or people" is people. Only one organization on the papers was a for-profit company. That was Extended Reality Systems LLC, a Florida firm with one listed manager, Carl Arvidson. The state dissolved it on <strong>September 24, 2021</strong>, after it stopped filing annual reports (<a href="https://bisprofiles.com/fl/extended-reality-systems-l16000194113" target="_blank" rel="noopener">BisProfiles, a mirror of state data</a>). The researchers could not open the state's own site, so that status needs one manual check at search.sunbiz.org (document L16000194113). imec USA is a nonprofit, not a company. Its legal name is Imec USA Nanoelectronics Design Center, Inc. It is a Florida not-for-profit corporation and a 501(c)(3) at 194 NeoCity Way, Kissimmee (<a href="https://www.guidestar.org/profile/30-0941966" target="_blank" rel="noopener">GuideStar</a>). An AP story in 2019 called it a "non-profit company" in its text and a "private company" in a caption, which explains some confusion (<a href="https://www.wusf.org/environment/2019-10-13/new-camera-could-help-florida-in-fight-against-pythons" target="_blank" rel="noopener">WUSF/AP 2019</a>).</p>
+<table>
+<thead>
+<tr>
+<th>Organization</th>
+<th>What it is</th>
+<th>Role in the python work</th>
+<th>Status, November 2026</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>imec USA, Kissimmee</td>
+<td>Nonprofit research institute; U.S. arm of imec in Belgium</td>
+<td>Hyperspectral measurements, camera design, detector (<a href="https://opg.optica.org/ao/abstract.cfm?uri=ao-58-13-D98" target="_blank" rel="noopener">Applied Optics 2019</a>)</td>
+<td>Same name and address; now works on superconducting and RF electronics, with no imaging (<a href="https://www.imec-int.com/en/imec-usa/imec-usa-florida" target="_blank" rel="noopener">imec Florida page</a>)</td>
+</tr>
+<tr>
+<td>imec, Leuven, Belgium</td>
+<td>Nonprofit research institute</td>
+<td>SNAPSCAN hyperspectral camera; four co-authors</td>
+<td>Not researched</td>
+</tr>
+<tr>
+<td>Extended Reality Systems LLC, New Smyrna Beach</td>
+<td>For-profit LLC, one manager</td>
+<td>Field spectra; software idea to alert hunters (<a href="https://www.fox35orlando.com/news/kissimmee-lab-creates-high-tech-cameras-to-flush-out-invasive-python" target="_blank" rel="noopener">FOX 35, 2019</a>)</td>
+<td>Dissolved by the state, 2021</td>
+</tr>
+<tr>
+<td>UCF College of Optics and Photonics (CREOL)</td>
+<td>University labs: Driggers' infrared group, then Renshaw's Knight Vision Lab</td>
+<td>NIR against visible study; FWC contract; two dissertations</td>
+<td>Renshaw lab still active (<a href="https://creol.ucf.edu/person/C-Kyle-Renshaw" target="_blank" rel="noopener">CREOL</a>)</td>
+</tr>
+<tr>
+<td>UF IFAS Fort Lauderdale Research and Education Center</td>
+<td>University lab (Mazzotti)</td>
+<td>Pythons, measurement site, SPIE co-author</td>
+<td>Active on python ecology and removal, not cameras (<a href="https://scholars.ufl.edu/fjma/grants" target="_blank" rel="noopener">UF Scholars</a>)</td>
+</tr>
+<tr>
+<td>Embry-Riddle, with WarrenUAS of Warren County Community College (New Jersey)</td>
+<td>University, and a college drone training program</td>
+<td>Drone NIR against color study (<a href="https://erau.edu/about/news-and-stories/news/eagles-use-drones-to-track-invasive-pythons-in-the-everglades" target="_blank" rel="noopener">ERAU news 2022</a>)</td>
+<td>No python work after 2023 found</td>
+</tr>
+<tr>
+<td>Florida Fish and Wildlife Conservation Commission (FWC)</td>
+<td>State agency</td>
+<td>Dead pythons; a 2021 contract with the UCF team (<a href="https://www.optica.org/about/newsroom/news_releases/2021/infrared_imaging_leaves_invasive_pythons_nowhere_t/" target="_blank" rel="noopener">Optica 2021</a>)</td>
+<td>Contract amount and results not found</td>
+</tr>
+</tbody>
+</table><figure class="fig" id="fig-net"><div class="stage tall"><canvas id="netCv" role="img" aria-label="A map of the people and groups around Ron Driggers in 2019, and where each one is in 2026."></canvas><div class="bar"><div class="seg" role="group" aria-label="When"><button type="button" data-when="then" aria-pressed="true">2019: the team</button><button type="button" data-when="now" aria-pressed="false">2026: where they are</button></div><span class="grow"></span><span class="legend"><span><i style="background:#FFD27A"></i>nonprofit</span><span><i style="background:#5CC8C3"></i>university</span><span><i style="background:#FF4D6D"></i>company</span><span><i style="background:#7CB8F0"></i>state</span></span></div></div><figcaption class="cap">One hub, many partners. Press the 2026 button to see who moved on and what is still live.</figcaption></figure>
+<p>Driggers sits at the center of the network. He ran St. Johns Optical Systems from 2013 to 2017, and Orges Furxhi was its engineering director (<a href="https://www.optics.arizona.edu/person/ronald-driggers" target="_blank" rel="noopener">UA profile</a>; <a href="https://www.spiedigitallibrary.org/profile/Orges.Furxhi-92191" target="_blank" rel="noopener">SPIE profile</a>). Both then joined imec USA. Driggers took a UCF professorship "with a part-time appointment at IMEC" (<a href="https://creol.ucf.edu/wp-content/uploads/sites/2/2018/10/AnnualReport2017.pdf" target="_blank" rel="noopener">CREOL annual report 2017</a>). His UCF students and the imec staff did the work with Arvidson and Mazzotti. The Embry-Riddle team shares no authors with this group. Its only links are the same state partners.</p>
+<table>
+<thead>
+<tr>
+<th>Person</th>
+<th>Role then</th>
+<th>Where now (November 2026)</th>
+<th>Python work since 2021</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Ronald Driggers</td>
+<td>Team lead; UCF professor and part-time imec</td>
+<td>Endowed chair, University of Arizona optical sciences (<a href="https://www.optics.arizona.edu/person/ronald-driggers" target="_blank" rel="noopener">UA</a>)</td>
+<td>None in his group's topics (<a href="https://wp.optics.arizona.edu/driggers/people/" target="_blank" rel="noopener">Driggers group</a>)</td>
+</tr>
+<tr>
+<td>Orges Furxhi</td>
+<td>imec USA lab manager, then R&amp;D manager</td>
+<td>Principal of True Colors Infrared Imaging and an independent consultant (<a href="https://wp.optics.arizona.edu/driggers/people/" target="_blank" rel="noopener">Driggers group</a>); the firm's registration is <strong>not verified</strong></td>
+<td>None; last python paper 2021 (<a href="https://scholar.google.com/citations?user=-q14OjcAAAAJ" target="_blank" rel="noopener">Google Scholar</a>)</td>
+</tr>
+<tr>
+<td>Gonzalo Vaca-Castano</td>
+<td>imec USA; lead author, SPIE 2019</td>
+<td>UCF page says he works for CHEP and teaches robot vision; <strong>not confirmed</strong> (<a href="http://www.cs.ucf.edu/~gvaca/" target="_blank" rel="noopener">UCF</a>)</td>
+<td>None found</td>
+</tr>
+<tr>
+<td>Jennifer Hewitt</td>
+<td>UCF PhD student; lead author, 2021</td>
+<td>PhD in spring 2024; an Air Force Research Lab SMART scholar (<a href="https://wp.optics.arizona.edu/driggers/people/" target="_blank" rel="noopener">Driggers group</a>); employer not found</td>
+<td>2024 dissertation with three NIR python studies</td>
+</tr>
+<tr>
+<td>C. Kyle Renshaw</td>
+<td>UCF assistant professor; co-author, 2021</td>
+<td>Research associate professor; directs the Knight Vision Lab (<a href="https://creol.ucf.edu/person/C-Kyle-Renshaw" target="_blank" rel="noopener">CREOL</a>)</td>
+<td>Chaired Li Zhang's 2026 NIR python dissertation</td>
+</tr>
+<tr>
+<td>Frank Mazzotti</td>
+<td>UF biologist; SPIE co-author</td>
+<td>Program director and professor, UF Fort Lauderdale center (<a href="https://scholars.ufl.edu/fjma/grants" target="_blank" rel="noopener">UF Scholars</a>)</td>
+<td>Python ecology and removal grants to 2027; none on cameras</td>
+</tr>
+<tr>
+<td>Carl Arvidson</td>
+<td>Owner of Extended Reality Systems; about 30 years at an unnamed military contractor (<a href="https://www.monospektra.com/from-predator-to-prey-identifying-non-native-python-species-using-nir-reflection/" target="_blank" rel="noopener">Monospektra</a>)</td>
+<td>Not found</td>
+<td>None found</td>
+</tr>
+<tr>
+<td>Joe Cerreta</td>
+<td>Embry-Riddle principal investigator</td>
+<td>Associate professor, Embry-Riddle; other projects (<a href="https://erau.edu/faculty/Joseph.Cerreta" target="_blank" rel="noopener">ERAU</a>)</td>
+<td>None after 2023 found</td>
+</tr>
+</tbody>
+</table>
+<p>The money was small and mostly in kind. Osceola County backed imec's Florida center with <strong>$15 million over 5 years</strong> from 2016, plus UCF seed money (<a href="https://www.neocityfl.com/news/innovation-footprint-with-the-opening-of-imec-florida/" target="_blank" rel="noopener">NeoCity 2016</a>). FWC contracted the UCF team in 2021, at an undisclosed amount. Hewitt studied on an Air Force scholarship, and Embry-Riddle used a faculty seed grant. The researchers found no federal grant for python NIR work. FOX 35 reported in 2019 that funding "continues to be the challenge" (<a href="https://www.fox35orlando.com/news/kissimmee-lab-creates-high-tech-cameras-to-flush-out-invasive-python" target="_blank" rel="noopener">FOX 35</a>).</p>
+<p>imec's Florida center did not close or move. It changed its research. Its IRS filing says it is "transitioning from specialty imaging system R&amp;D to superconducting digital electronics R&amp;D" (<a href="https://www.guidestar.org/profile/30-0941966" target="_blank" rel="noopener">GuideStar</a>). Revenue was <strong>$5.40M in 2021 and $3.45M in 2022</strong>, a 36% drop, then <strong>$5.85M in 2024</strong> (<a href="https://projects.propublica.org/nonprofits/organizations/300941966" target="_blank" rel="noopener">ProPublica</a>). An interim manager ran it in 2022. Furxhi and the other imaging staff leave the officer lists after tax year 2021. No source states why the center changed. The timing points to an end of the imaging program in 2021 or 2022 (judgment).</p>
+<h2>Python skin stays dark where live plants turn bright above 750 nm</h2>
+<p>The 2019 reflectivity paper is the base of everything that follows. The team measured <strong>three pythons</strong> in a white box at UF's Fort Lauderdale center in November 2018. Python 1 was about 3 months old and 85 cm long. Python 2 was a young wild-caught snake. Python 3 was a dead, thawed snake of about 2 m. They used imec's SNAPSCAN hyperspectral camera, which records 150 bands from 470 to 900 nm. They compared the snakes with <strong>20 plant samples</strong>, 10 alive and 10 dead (<a href="https://www.researchgate.net/publication/332795937_Burmese_python_target_reflectivity_compared_to_natural_Florida_foliage_background_reflectivity" target="_blank" rel="noopener">Driggers et al. 2019</a>).</p>
+<p>The result is clear. Live plants show "a dramatic increase in reflectivity just above 680 nm." Dead plants reflect <strong>5% to 15% at 480 nm</strong> and <strong>20% to about 60% at 900 nm</strong>. The python's light underbelly reflects about 0.3 to 0.4. Its dark pattern stays near <strong>0.04 to 0.13</strong> from 480 to 900 nm. The researchers read that value from a plot, not from the text. The authors conclude: "pythons could be discriminated from live plants very easily in the bands above 750 nm." Against dead plants the gap is "smaller." The dead python's spectrum was "very similar" to the two live ones. Later studies use this one comparison to justify dead test snakes (<a href="https://www.researchgate.net/publication/332795937_Burmese_python_target_reflectivity_compared_to_natural_Florida_foliage_background_reflectivity" target="_blank" rel="noopener">Driggers et al. 2019</a>).</p><figure class="fig" id="fig-spec"><div class="stage mid"><canvas id="specCv" role="img" aria-label="Reflectance against wavelength. Live plants jump above about 700 nm; the python&#x27;s dark pattern stays low. A small gray camera view shows the contrast at the chosen band."></canvas><div class="bar"><label class="slide">Camera band <input id="specLam" type="range" min="470" max="900" step="5" value="550" aria-label="Camera band in nanometres"></label><span class="grow"></span><span class="readout" id="specRead"></span></div></div><figcaption class="cap">Python and dead-plant values come from the 2019 paper (read from its plots). The live-plant line is a typical leaf shape, not the paper's data.</figcaption></figure>
+<p>The papers state the contrast but not its cause. Plant reflectance rises sharply above about 700 nm, a well-known effect of leaf structure. None of these papers names that mechanism or explains why python skin stays dark (judgment). Licensed hunters also told the team that pythons usually lie on gravel road edges, with live and dead plants behind them. So every camera in this research was built for snakes in the open, not for snakes under cover.</p>
+<p>The companion SPIE manuscript tested automatic classifiers. It used three cameras and a spectrometer. The field photos show <strong>one dead python</strong> near Kissimmee, at 1 to 20 m, by day and under halogen light at night (<a href="https://www.researchgate.net/publication/333106202_Multispectral_camera_design_and_algorithms_for_Python_snake_detection_in_the_Florida_Everglades" target="_blank" rel="noopener">Vaca-Castano et al. 2019</a>). The table gives the share of pixels that each method labeled correctly. The test sets were small.</p>
+<table>
+<thead>
+<tr>
+<th>Method</th>
+<th>Python pixels found</th>
+<th>Other pixels labeled correctly</th>
+<th>Test set</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Random forest, all 150 hyperspectral bands</td>
+<td>0.855</td>
+<td>0.859</td>
+<td>15 of 79 hyperspectral images</td>
+</tr>
+<tr>
+<td>Random forest, 25 selected bands</td>
+<td>0.815 to 0.826</td>
+<td>0.843 to 0.849</td>
+<td>Same</td>
+</tr>
+<tr>
+<td>Random forest, visible multispectral camera (16 bands)</td>
+<td>0.244</td>
+<td>0.783</td>
+<td>12 images</td>
+</tr>
+<tr>
+<td>Random forest, NIR multispectral camera (25 bands)</td>
+<td>0.609</td>
+<td>0.800</td>
+<td>15 images</td>
+</tr>
+<tr>
+<td>Deep segmentation network, 3 NIR bands (695, 809 and 952 nm)</td>
+<td><strong>0.827</strong></td>
+<td><strong>0.995</strong> (0.5% false positives)</td>
+<td><strong>15 images</strong></td>
+</tr>
+</tbody>
+</table><figure class="fig" id="fig-pix"><div class="stage short"><canvas id="pixCv" role="img" aria-label="Bars for the share of python pixels each method found, and a pixel map where 82.7 percent of the python is found and a few grass pixels are false alarms."></canvas></div><figcaption class="cap">Tiny test sets: 12 to 15 images of one dead python. The map on the right is a drawing of what 82.7% and 0.5% look like, not a real result image.</figcaption></figure>
+<p>The deep network is the only published automatic NIR python detector with numbers. It found 82.7% of python pixels and mislabeled 0.5% of background pixels. But it saw one dead python, at short range, and fewer than 100 training images. The authors called for "actual hardware implementation of the camera" as future work. A spectrometer also showed "promising discriminability" in the short-wave infrared below 1,400 nm. Both 2019 papers proposed a second camera in that band for dead plants and soil. Nobody built it.</p>
+<h2>Observers saw pythons 20 to 34 percent farther, in narrow tests</h2>
+<p>The 2021 study asked a simple question. Do people see pythons farther away in an 850 nm NIR image than in a normal camera image? The team used <strong>two dead FWC pythons</strong>, each 4 to 5 ft long and about 5 lb. It put them in grass at 10 sites, 3 to 17 m from the cameras. They shot 100 images per camera, half by day and half at night with 850 nm LED arrays and halogen lights. <strong>Thirteen observers</strong> clicked on each python or on "No Python" (<a href="https://opg.optica.org/ao/fulltext.cfm?uri=ao-60-17-5066" target="_blank" rel="noopener">Hewitt et al. 2021</a>). The hit rate is the share of python images in which observers found the python. The 50% range is the distance at which observers found it half the time.</p>
+<table>
+<thead>
+<tr>
+<th>Condition</th>
+<th>Monochrome visible</th>
+<th>Color visible</th>
+<th>NIR</th>
+<th>NIR against color</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Hit rate, day</td>
+<td>0.39</td>
+<td>0.69</td>
+<td>0.73</td>
+<td>+0.04</td>
+</tr>
+<tr>
+<td>Hit rate, night</td>
+<td>0.51</td>
+<td>0.51</td>
+<td><strong>0.77</strong></td>
+<td><strong>+0.26</strong></td>
+</tr>
+<tr>
+<td>50% range, day, all images</td>
+<td>16.1 m</td>
+<td>23.7 m</td>
+<td>28.4 m</td>
+<td>1.20 times</td>
+</tr>
+<tr>
+<td>50% range, day, glint images removed</td>
+<td>3.2 m</td>
+<td>12.2 m</td>
+<td>16.3 m</td>
+<td>1.34 times</td>
+</tr>
+<tr>
+<td>50% range, night</td>
+<td>6.5 m</td>
+<td>9.4 m</td>
+<td><strong>11.6 m</strong></td>
+<td>1.23 times</td>
+</tr>
+</tbody>
+</table><figure class="fig" id="fig-range"><div class="stage short"><canvas id="rangeCv" role="img" aria-label="Two lines on a distance ruler show how far people found the python half the time with a color camera and a near-infrared camera."></canvas><div class="bar"><div class="seg" role="group" aria-label="Condition"><button type="button" data-cond="night" aria-pressed="true">Night</button><button type="button" data-cond="day" aria-pressed="false">Day</button><button type="button" data-cond="glint" aria-pressed="false">Day, glint removed</button></div></div></div><figcaption class="cap">From Hewitt et al. 2021: 13 viewers, photos of 2 dead pythons, 100 images per camera. Daytime ranges lie past the farthest test python, so they come from a fitted curve.</figcaption></figure>
+<p>The ratios in the last column are arithmetic from the paper's tables. The paper's own text says NIR reached 50% detection "1.2 times farther than RGB Vis at night and 1.3 times farther during the day." The abstract says "20% longer ranges." Most day images were shot in mid-afternoon facing west, and sun glint on the snakes helped the color camera. So NIR's clearest gain is at night. The daytime 50% ranges of 23.7 m and 28.4 m lie beyond the farthest python at 17 m. So they extend the fitted curve past the data (judgment). The paper left gravel, dirt and sand backgrounds "for later." Its data are "not publicly available."</p>
+<p>The 2023 Embry-Riddle study is the only independent check. The team flew a DJI Mavic 2 Pro with a full-spectrum conversion and an 850 nm filter, straight down at 3 to 15 m. It photographed a <strong>3 m dead python</strong> on a levee in marl prairie, stretched out and coiled. <strong>101 people</strong>, a convenience sample of staff and students, reviewed 55 images (<a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">Cerreta et al. 2023</a>). The paper also says "Two 3-meter pythons were used," which conflicts with its method text.</p>
+<table>
+<thead>
+<tr>
+<th>Height</th>
+<th>Color, stretched out</th>
+<th>NIR, stretched out</th>
+<th>Color, coiled</th>
+<th>NIR, coiled</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>3 m</td>
+<td>0.99</td>
+<td>1.00</td>
+<td>1.00</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>6 m</td>
+<td>0.98</td>
+<td>0.98</td>
+<td>0.95</td>
+<td>1.00</td>
+</tr>
+<tr>
+<td>9 m</td>
+<td>0.92</td>
+<td>0.95</td>
+<td>0.98</td>
+<td>0.98</td>
+</tr>
+<tr>
+<td>12 m</td>
+<td>0.96</td>
+<td>0.95</td>
+<td>0.95</td>
+<td>0.98</td>
+</tr>
+<tr>
+<td>15 m</td>
+<td><strong>0.59</strong></td>
+<td><strong>0.94</strong></td>
+<td>0.80</td>
+<td>0.98</td>
+</tr>
+</tbody>
+</table>
+<p>Up to 12 m, the two cameras stay within 0.05 of each other. Only at 15 m does NIR pull ahead. The paper also compares the ratio of hits to false alarms: <strong>6.05 for NIR against 4.74 for color</strong>. The test gives t(10) = 1.77 and p = .048. It calls this "a 1.3x greater rate." Ten degrees of freedom imply about a dozen pooled values, not 101 people's scores (judgment). The paper does not report false alarm rates by camera.</p>
+<p>Hewitt's 2024 dissertation adds two NIR studies, both in daylight with dead pythons (<a href="https://stars.library.ucf.edu/etd2023/159/" target="_blank" rel="noopener">Hewitt 2024</a>). In the first, an NIR camera rode on a car roof at 5 mph past <strong>two dead 8 ft pythons</strong> in a grass strip. Fourteen observers watched the videos. Detection ran from <strong>0.81 to 0.96</strong>, depending on where the camera pointed. A steeper downward angle beat a longer view, against the team's own model. The author wrote that "long average range to target limits probability of detection more than increased time on target benefits it."</p>
+<p>In the second, a lab-built drone carried an NIR camera with a 35 mm lens straight down over <strong>one dead 157 cm python</strong>. Eleven observers judged the frames.</p>
+<table>
+<thead>
+<tr>
+<th>Drone height</th>
+<th>10 m</th>
+<th>20 m</th>
+<th>30 m</th>
+<th>40 m</th>
+<th>50 m</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Detection probability</td>
+<td>100%</td>
+<td>99.3%</td>
+<td>95.5%</td>
+<td>82.7%</td>
+<td>68.2%</td>
+</tr>
+</tbody>
+</table><figure class="fig" id="fig-drone"><div class="stage mid"><canvas id="droneCv" role="img" aria-label="A drone rises over a python while a chart shows how detection changes with height."></canvas><div class="bar"><div class="seg" role="group" aria-label="Study"><button type="button" data-study="erau" aria-pressed="true">Embry-Riddle 2023</button><button type="button" data-study="ucf" aria-pressed="false">UCF 2024 dissertation</button></div></div></div><figcaption class="cap">Both tests used dead pythons in daylight, and people, not software, judged the images.</figcaption></figure>
+<p>The fitted 50% range is <strong>60 m</strong>, past the highest flight, and the fitted limit for 80% detection is <strong>42.7 m</strong>. Observers made false alarms on <strong>10%</strong> of frames on average. Wind blurred many frames, so the team kept "the most pristine" ones, which flatters the result (judgment). The author calls the task "exceptionally difficult." She also reports what the team saw in the Everglades: "grass that exceeds the python's height blocks it from view."</p>
+<p>Every test python was 3 m or shorter. Florida's record python measured 19 ft (<a href="https://www.npr.org/2023/07/13/1187497592/record-breaking-burmese-python-longest-florida" target="_blank" rel="noopener">NPR 2023</a>). The USGS-led synthesis of 2023 still lists infrared as "still being explored as a tool to increase detections during road cruising" (<a href="https://neobiota.pensoft.net/article/90439/" target="_blank" rel="noopener">Guzy et al. 2023</a>).</p>
+<h3>Press claims stretch three narrow results</h3><div class="claims">
+<div class="claim reveal"><div class="said">"20% farther"</div><div class="was">Measured: the half-way range was 1.20 times as far by day (all images) and 1.23 times at night. Thirteen people judged photos of two dead pythons.</div></div>
+<div class="claim reveal"><div class="said">"1.3 times farther"</div><div class="was">Measured: 1.34 times by day, but only after the sun-glint images were removed, when every range shrank (16.3 m against 12.2 m).</div></div>
+<div class="claim reveal"><div class="said">"35% better"</div><div class="was">Measured: 59% against 94% at one height (15 m), one pose and one dead python. Below 15 m the two cameras tie.</div></div>
+</div>
+<table>
+<thead>
+<tr>
+<th>Press claim</th>
+<th>Where it appeared</th>
+<th>What the paper measured</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>"20% farther away than regular cameras"</td>
+<td><a href="https://wildlife.org/special-cameras-can-better-detect-invasive-pythons/" target="_blank" rel="noopener">The Wildlife Society 2021</a>; the paper's abstract</td>
+<td>50% range ratios of <strong>1.20</strong> (day, all images) and <strong>1.23</strong> (night). These match 20%.</td>
+</tr>
+<tr>
+<td>"up to 1.3 times farther"</td>
+<td><a href="https://www.optica.org/about/newsroom/news_releases/2021/infrared_imaging_leaves_invasive_pythons_nowhere_t/" target="_blank" rel="noopener">Optica press release 2021</a></td>
+<td><strong>1.34</strong> by day after removing glint images, where all ranges shrank (NIR 16.3 m). Night was 1.2 times.</td>
+</tr>
+<tr>
+<td>Cameras "operated particularly well at night" due to less glare</td>
+<td><a href="https://wildlife.org/special-cameras-can-better-detect-invasive-pythons/" target="_blank" rel="noopener">The Wildlife Society 2021</a></td>
+<td>Partly right. NIR's hit-rate edge is largest at night (0.77 against 0.51). But the paper says glint helped the color camera, not that glare hurt NIR.</td>
+</tr>
+<tr>
+<td>"a 35% increase in detection accuracy"</td>
+<td><a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">Cerreta et al. 2023</a> and later coverage</td>
+<td>A <strong>35 percentage point</strong> gap, 0.94 against 0.59, at <strong>one height (15 m), one pose, one dead python</strong>. As a relative gain it is 59%. Below 15 m the cameras tie.</td>
+</tr>
+<tr>
+<td>"a 1.3x greater rate with the NIR camera"</td>
+<td><a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">Cerreta et al. 2023</a></td>
+<td>A ratio of mean hit-to-false-alarm ratios, 6.05 against 4.74, from about a dozen pooled values (judgment). Not a range gain.</td>
+</tr>
+<tr>
+<td>Pythons "from a nearby zoo"; snakes stood out most at 850 nm</td>
+<td><a href="https://wildlife.org/looking-beyond-the-visible-spectrum-to-detect-pythons/" target="_blank" rel="noopener">The Wildlife Society 2019</a></td>
+<td>The reported data come from three pythons at UF's Fort Lauderdale center. Zoo data were "less controlled" and not reported. The paper says "above 750 nm" and simulates 800 nm.</td>
+</tr>
+<tr>
+<td>Team flew over "two python carcasses and one live python, a 10-foot female"</td>
+<td><a href="https://erau.edu/about/news-and-stories/news/eagles-use-drones-to-track-invasive-pythons-in-the-everglades" target="_blank" rel="noopener">ERAU news 2022</a></td>
+<td>The paper analyzes images of dead pythons only. It reports no live-python result.</td>
+</tr>
+<tr>
+<td>Camera to cost <strong>$2,000 to $3,000</strong>, for hunters by spring 2020</td>
+<td><a href="https://www.cbsnews.com/miami/news/camera-could-help-florida-fight-burmese-pythons/" target="_blank" rel="noopener">CBS Miami 2019</a></td>
+<td>No source found any camera that reached hunters.</td>
+</tr>
+<tr>
+<td>"an estimated 300,000 Burmese pythons," credited to Driggers 2019</td>
+<td><a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">Cerreta et al. 2023</a></td>
+<td>Driggers 2019 gave "between 30,000 and 300,000."</td>
+</tr>
+</tbody>
+</table>
+<h2>No product followed, and Florida still finds pythons by eye, dog and lure</h2>
+<p>The published imec, UF and Extended Reality Systems line ends with the 2021 paper. Web searches found no patent, no SBIR award and no product for any team member or for Extended Reality Systems. Nobody ran direct searches of the patent office, SBIR.gov or USAspending, so this negative result is <strong>not verified</strong>. FWC's python coordinator said in 2021, "We are evaluating whether or not this technology will be effective in the field" (<a href="https://www.optica.org/about/newsroom/news_releases/2021/infrared_imaging_leaves_invasive_pythons_nowhere_t/" target="_blank" rel="noopener">Optica 2021</a>). No source reports the outcome of that evaluation. Furxhi later said that automatic detection "had recently been demonstrated," in an undated interview with no paper behind it (<a href="https://www.sustainability-times.com/climate/though-expert-at-camouflage-invasive-pythons-have-met-their-match/" target="_blank" rel="noopener">Sustainability Times</a>). An October 2026 news overview lists "near-infrared cameras" only among methods that have been tested (<a href="https://www.yahoo.com/news/science/articles/floridas-python-problem-defied-solutions-090259062.html" target="_blank" rel="noopener">Palm Beach Post via Yahoo</a>).</p><ol class="tl reveal"><li class="org"><span class="when">2013 to 2017</span><span class="what">Driggers runs St. Johns Optical Systems; Furxhi is its engineering director.</span></li><li class="money"><span class="when">2016</span><span class="what">Osceola County backs imec&#x27;s Florida center with $15 million over 5 years.</span></li><li class="research"><span class="when">Nov 2018</span><span class="what">Three pythons measured in 150 bands at UF&#x27;s Fort Lauderdale center.</span></li><li class="research"><span class="when">2019</span><span class="what">Two papers. Press says a $2,000 to $3,000 hunter camera will come by spring 2020.</span></li><li class="org"><span class="when">2020</span><span class="what">Driggers moves to the University of Arizona. The hunter camera never ships.</span></li><li class="research"><span class="when">June 2021</span><span class="what">UCF near-infrared against color study. FWC contracts the UCF team.</span></li><li class="org"><span class="when">Sept 2021</span><span class="what">Florida dissolves Extended Reality Systems.</span></li><li class="org"><span class="when">2022</span><span class="what">imec Florida revenue falls 36%; it turns to superconducting electronics.</span></li><li class="research"><span class="when">Jan 2023</span><span class="what">Embry-Riddle drone study.</span></li><li class="research"><span class="when">Spring 2024</span><span class="what">Hewitt&#x27;s dissertation adds a car study and a drone study.</span></li><li class="live"><span class="when">Spring 2026</span><span class="what">Li Zhang&#x27;s UCF dissertation builds a near-infrared python detector. Nobody here has read it.</span></li><li class="money"><span class="when">Sept 2026</span><span class="what">DARPA&#x27;s Guam snake prize: Conservation X Labs wins $250,000 for AI detection.</span></li></ol>
+<h3>One live thread: Li Zhang's 2026 dissertation, which nobody here has read</h3>
+<p>Li Zhang finished a UCF CREOL PhD in spring 2026, with Kyle Renshaw as committee chair. The title is "Infrared Systems And Their Application On Target Detection And Geolocation." The library record says it built an NIR system with active lighting on a moving platform. It also built a custom machine-vision detector for Burmese pythons in "marshy South Florida environments." The record says the detector gives few false alarms. It names no sponsor (<a href="https://stars.library.ucf.edu/gradstudies_etd_2026/217" target="_blank" rel="noopener">UCF STARS</a>).</p>
+<p>The notes do not know the rest. They lack the hit rate, the false alarm rate and the size of the image set. They do not say if the pythons were alive or dead, where the team tested, or if the platform was a car or a drone. They do not say if this work is the 2021 FWC contract, or if a journal paper or a field trial followed. His CREOL page lists a 2024 Sensors paper that compares NIR and long-wave thermal for target location in clutter. The researchers did not read it (<a href="https://creol.ucf.edu/person/C-Kyle-Renshaw" target="_blank" rel="noopener">CREOL</a>). This dissertation is the closest prior art for any Killer Conservation NIR camera (judgment). Read it in full before you choose the camera witness.</p>
+<h3>What Florida programs use in November 2026</h3>
+<p>No source found any Florida program that gives NIR or thermal gear to hunters. Routine removal still depends on human eyes. Cameras appear only in research and in one pilot.</p>
+<table>
+<thead>
+<tr>
+<th>Program</th>
+<th>How it finds pythons</th>
+<th>Role of cameras</th>
+<th>Latest public numbers</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SFWMD Python Elimination Program and FWC's PATRIC</td>
+<td>Paid contractors search by eye, mostly at night on levees and roads</td>
+<td>None routine</td>
+<td>Over 9,000 removed with visual survey methods, as of a 2022 summary (<a href="https://www.fws.gov/sites/default/files/documents/2025-05/managing-non-native-burmese-pythons-in-southern-florida_final.pdf" target="_blank" rel="noopener">USFWS</a>)</td>
+</tr>
+<tr>
+<td>Conservancy of Southwest Florida</td>
+<td>Radio-tagged male scout snakes lead staff to breeding females</td>
+<td>None</td>
+<td>Record 2025-26 season: 177 pythons, 8,080 lb (<a href="https://conservancy.org/conservancy-surpasses-20-ton-milestone-in-burmese-python-removal-sets-new-record-season/" target="_blank" rel="noopener">Conservancy</a>)</td>
+</tr>
+<tr>
+<td>Florida Python Challenge</td>
+<td>Public contest in July</td>
+<td>None found</td>
+<td>About 280 pythons from 907 people in 2026 (<a href="https://www.wusf.org/environment/2026-08-07/nearly-300-pythons-are-removed-during-the-annual-challenge" target="_blank" rel="noopener">WUSF</a>); most were hatchlings (<a href="https://www.wusf.org/environment/2026-08-23/most-constrictors-caught-during-annual-summer-python-challenge-were-hatchlings" target="_blank" rel="noopener">WUSF</a>)</td>
+</tr>
+<tr>
+<td>UF and SFWMD robot rabbits ("Project Hopper")</td>
+<td>Decoys give off heat and scent; cameras alert staff</td>
+<td>AI classifier still in training (<a href="https://www.nbcmiami.com/news/local/fake-rabbits-burmese-pythons-removal-everglades/3859705/" target="_blank" rel="noopener">NBC Miami</a>)</td>
+<td>No results published. Reports give 40, about 90 or 120 units, at about <strong>$4,000</strong> each (<a href="https://www.nbcnews.com/news/us-news/robot-rabbits-latest-tool-florida-battle-control-invasive-burmese-pyth-rcna227678" target="_blank" rel="noopener">AP via NBC News</a>)</td>
+</tr>
+<tr>
+<td>USGS radio tracking</td>
+<td>Tagged pythons; a 2026 drone test carries tracking gear or a camera</td>
+<td>Drone trial</td>
+<td>No results; the USGS page did not load, so <strong>not verified</strong> (<a href="https://www.usgs.gov/centers/fort-collins-science-center/news/fort-science-action-2026-part-14-using-aerial-imagery" target="_blank" rel="noopener">USGS</a>)</td>
+</tr>
+</tbody>
+</table>
+<p>The one automatic detection method with peer-reviewed results watches fixed spots, not landscapes. In a 2021 study, live-rabbit pens with infrared time-lapse cameras made <strong>21 of 22</strong> python detections. Cameras recorded 375 snakes, and visual surveys recorded 10 (<a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11210459/" target="_blank" rel="noopener">McCampbell et al. 2024</a>). A 2025 follow-up used an object-detection model as a filter. It flagged <strong>94.5%</strong> of blank frames and cut review time <strong>six-fold</strong>. It matched human review for snakes over 66 cm but missed more small snakes (<a href="https://pubs.usgs.gov/publication/70266494" target="_blank" rel="noopener">USGS summary</a>). The researchers read only the summary, and the model's name is not known. The widely reported October 2026 UF "AI" study is different. It applies machine learning to capture records, not to images (<a href="https://www.yahoo.com/news/science/articles/floridas-python-problem-defied-solutions-090259062.html" target="_blank" rel="noopener">Palm Beach Post via Yahoo</a>). Thermal fares no better. In an October 2026 night test by a python hunter, a thermal camera "offered little help," and a dog found the snake (<a href="https://www.yahoo.com/news/science/articles/florida-hunter-pits-high-tech-181700436.html" target="_blank" rel="noopener">The Cool Down via Yahoo</a>).</p>
+<h3>Federal prizes now reward AI snake detection, but on Guam</h3>
+<p>DARPA's Biological Technologies Office ran the Autonomous Control of Invasive Species Prize. The sprint was titled "Controlling Guam's Brown Tree Snake Through Advanced Suppression Technology." After a Virtual Demonstration Day on September 28, 2026, DARPA named three winners (<a href="https://www.darpa.mil/research/challenges/autonomous-control-invasive-species-prize-challenge" target="_blank" rel="noopener">DARPA</a>). The research team checked these facts on darpa.mil on November 17, 2026.</p>
+<table>
+<thead>
+<tr>
+<th>Place</th>
+<th>Winner</th>
+<th>Award</th>
+<th>Category</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>First</td>
+<td>Conservation X Labs</td>
+<td><strong>$250,000</strong></td>
+<td>Advanced AI and autonomous detection</td>
+</tr>
+<tr>
+<td>Second</td>
+<td>University of Guam</td>
+<td><strong>$200,000</strong></td>
+<td>Locally integrated ecological solutions</td>
+</tr>
+<tr>
+<td>Third</td>
+<td>Aerisys Group Corporation</td>
+<td><strong>$100,000</strong></td>
+<td>Scalable sensor technology</td>
+</tr>
+</tbody>
+</table>
+<p>The prize targets brown tree snakes on Guam, not pythons. Two older awards point the same way. In 2022, the USFWS Theodore Roosevelt Genius Prize went to Wild Vision Systems for an AI smart trap for invasive reptiles (<a href="https://www.fws.gov/press-release/2022-09/theodore-roosevelt-genius-prize-winners-announced" target="_blank" rel="noopener">USFWS</a>). A Defense Department SERDP project builds an AI smart trap for brown tree snakes, and its early prototypes caught tegus in Florida (<a href="https://serdp-estcp.mil/projects/details/96a4b7d1-7b15-4c82-a6ee-47f63859b706" target="_blank" rel="noopener">SERDP</a>). A UF researcher said the tegu trap probably would not work on Burmese pythons (<a href="https://www.yahoo.com/news/articles/argentine-black-white-tegu-trap-090258172.html" target="_blank" rel="noopener">Palm Beach Post via Yahoo</a>). No 2024 to 2026 prize or solicitation specific to python detection technology was found. FWC's September 2026 "NonNative Snake Control" request for proposals does ask for "innovative technologies" (<a href="https://starbridge.ai/rfp/nonnative-snake-control" target="_blank" rel="noopener">Starbridge</a>).</p>
+<h2>For the nest hunt, near-infrared cannot see the coil, but it may see the disturbed grass</h2>
+<p><strong>Warning: no NIR study looked at a nest.</strong> Every study used snakes lying in the open. Hewitt's dissertation says it plainly: "grass that exceeds the python's height blocks it from view" (<a href="https://stars.library.ucf.edu/etd2023/159/" target="_blank" rel="noopener">Hewitt 2024</a>). A brooding female coils under cover, in dense plants or a burrow. So no camera, NIR or color, is likely to see her (judgment).</p>
+<p>NIR can still help one of the three witnesses. The 2019 data show that live plants brighten much more above 680 nm than dead plants do. Dead plants reflect 20% to about 60% at 900 nm, and live plants jump far higher (<a href="https://www.researchgate.net/publication/332795937_Burmese_python_target_reflectivity_compared_to_natural_Florida_foliage_background_reflectivity" target="_blank" rel="noopener">Driggers et al. 2019</a>). So in an 850 nm image, healthy grass looks bright, and crushed, cut or dying grass looks darker. A nest site often shows flattened plants or fresh bare soil at the opening (judgment). An NIR band could make that patch stand out, even when the coil stays hidden.</p><figure class="fig" id="fig-nest"><div class="stage tall"><canvas id="nestCv" role="img" aria-label="A nest opening seen from above. On the color side, crushed grass blends in. On the 850 nm side, live grass is bright and the crushed patch and a few dead tufts look dark."></canvas><div class="bar"><span class="readout">Drag across the picture to compare the two cameras.</span><span class="grow"></span><span class="legend"><span><i style="background:#FFD27A"></i>crushed grass</span><span><i style="background:#FFB3C1"></i>false flag</span></span></div></div><figcaption class="cap">A drawing of an untested idea, not field data. Live plants reflect much more light above 680 nm than dead or crushed plants, so the disturbed patch could stand out.</figcaption></figure>
+<table>
+<thead>
+<tr>
+<th>Witness</th>
+<th>What it answers</th>
+<th>What NIR changes (judgment)</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Lidar</td>
+<td>Is the spot raised and dry, and did its shape change?</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>Heat camera</td>
+<td>Is something warm here, night after night?</td>
+<td>Nothing</td>
+</tr>
+<tr>
+<td>Camera</td>
+<td>Is there fresh soil, crushed grass or a new opening?</td>
+<td>An NIR band makes crushed or dying grass stand out against live grass</td>
+</tr>
+</tbody>
+</table>
+<p>The test is cheap. Embry-Riddle got NIR from a consumer drone with a full-spectrum conversion and an 850 nm filter (<a href="https://commons.erau.edu/jaaer/vol32/iss1/3" target="_blank" rel="noopener">Cerreta et al. 2023</a>). That camera can fly in the same dawn session as the lidar and the heat camera.</p>
+<p><strong>Caution: the ranges of live and dead plants overlap.</strong> Patches of naturally dead grass will also look dark. So the NIR camera will raise false flags, and only agreement with the other two witnesses makes it useful (judgment).</p>
+<p>The first test (judgment):</p>
+<ol>
+<li>Fly an NIR-converted camera and a color camera over the nests of known scout females, with USGS as the partner.</li>
+<li>Count how often each camera shows the disturbed patch at the opening.</li>
+<li>Count the false flags in the same area, such as dead tufts and old diggings.</li>
+</ol>
+<p>Four groups hold what this test needs (judgment). Renshaw's Knight Vision Lab at UCF holds the newest NIR python detector. Driggers and Furxhi know the camera and band design. USGS tracks the scout females whose nests give known answers. Mazzotti's UF group and FWC supply pythons and permits. imec USA no longer does imaging work, so it is not a partner.</p>
+<h2>Conclusion</h2>
+<p>The NIR python work did not fail on physics. It stopped for lack of a buyer (judgment). The contrast is real and repeatable, but the money was short-term, the lead institute changed its mission, and the one state contract left no public trace. Florida's spending since then went to methods that raise encounters: lures, scout snakes, timing models and robot rabbits.</p>
+<p>For the nest hunt, NIR is a side test, not a main witness (judgment). It cannot see a hidden coil. Its best use is in the camera witness, to flag crushed grass at a nest opening. The lidar and heat witnesses must carry the work. The real gap is the first field number: nobody has measured how often any camera flags a real python nest. A test over known scout-female nests would hold the only such numbers in existence (judgment).</p>
+<hr />
+<p><em>Not checked: the full text of Li Zhang's 2026 dissertation; the printed SPIE 2019 version; direct patent, SBIR and state corporate records; the current employers of Hewitt, Vaca-Castano and Arvidson. Risk: all detection numbers come from dead pythons in open scenes, so field rates will probably be lower.</em></p></article></main>
+<footer><p>Built from the research report of November 17, 2026. Pictures marked as drawings or assumptions are teaching aids, not data.</p></footer>
+<script>/* Python near-infrared research report: pictures that move. Data come from the report; marked shapes are assumed. */
+(function () {
+'use strict';
+var T0 = performance.now();
+function log(m) { console.log('[nir] ' + m + ' (' + Math.round(performance.now() - T0) + ' ms)'); }
+var REDUCED = window.matchMedia && matchMedia('(prefers-reduced-motion: reduce)').matches;
+function $(id) { return document.getElementById(id); }
+function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+function lerp(a, b, t) { return a + (b - a) * t; }
+function smooth(t) { t = clamp(t, 0, 1); return t * t * (3 - 2 * t); }
+function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+var FONT = '-apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", system-ui, sans-serif';
+var C = { bg: '#0D211E', ink: '#E8F0EA', mute: '#9FB7AC', dim: '#6F877D', gold: '#FFD27A', red: '#FF4D6D', teal: '#5CC8C3', vis: '#E2A04B', nir: '#C9D8FF', line: 'rgba(255,255,255,.12)' };
+
+function fit(cv) {
+  var r = cv.getBoundingClientRect(), d = Math.min(2, window.devicePixelRatio || 1);
+  cv.width = Math.max(1, Math.round(r.width * d)); cv.height = Math.max(1, Math.round(r.height * d));
+  var x = cv.getContext('2d'); x.setTransform(d, 0, 0, d, 0, 0);
+  return { x: x, w: r.width, h: r.height, d: d };
+}
+function pill(x, tx, ty, text, o) {
+  o = o || {};
+  x.font = (o.weight || 650) + ' ' + (o.size || 13) + 'px ' + FONT;
+  var w = x.measureText(text).width + 16, h = (o.size || 13) + 12, CW = x.canvas.clientWidth || 99999;
+  var X = o.align === 'right' ? tx - w : o.align === 'left' ? tx : tx - w / 2; X = clamp(X, 6, Math.max(6, CW - w - 6));
+  x.fillStyle = o.bg || 'rgba(8,22,20,.84)'; x.strokeStyle = o.border || 'rgba(255,255,255,.14)'; x.lineWidth = 1;
+  x.beginPath(); if (x.roundRect) x.roundRect(X, ty - h / 2, w, h, 8); else x.rect(X, ty - h / 2, w, h); x.fill(); x.stroke();
+  x.fillStyle = o.color || C.ink; x.textBaseline = 'middle'; x.textAlign = 'left'; x.fillText(text, X + 8, ty + .5);
+  return { x: X, w: w };
+}
+function wrap(x, text, maxW) {
+  var words = text.split(' '), lines = [], cur = '';
+  words.forEach(function (w) { var t = cur ? cur + ' ' + w : w; if (x.measureText(t).width > maxW && cur) { lines.push(cur); cur = w; } else cur = t; });
+  if (cur) lines.push(cur); return lines;
+}
+function txt(x, s, px, py, o) { o = o || {}; x.font = (o.weight || 600) + ' ' + (o.size || 13) + 'px ' + FONT; x.fillStyle = o.color || C.mute; x.textAlign = o.align || 'left'; x.textBaseline = o.base || 'alphabetic'; x.fillText(s, px, py); x.textAlign = 'left'; }
+function pressGroup(btns, active) { btns.forEach(function (b) { b.setAttribute('aria-pressed', b === active ? 'true' : 'false'); }); }
+
+/* ---------- scene runner: a picture draws only while it is on screen ---------- */
+var scenes = [];
+function scene(id, make) {
+  var el = $(id); if (!el) { console.error('[nir] missing canvas ' + id); return; }
+  var t = performance.now();
+  try { var s = make(el); s.id = id; s.el = el; s.visible = false; s.shown = false; scenes.push(s); log('built ' + id + ' in ' + Math.round(performance.now() - t) + ' ms'); }
+  catch (e) { console.error('[nir] build failed: ' + id, e); }
+}
+function start() {
+  var io = new IntersectionObserver(function (es) {
+    es.forEach(function (e) {
+      var s = scenes.filter(function (q) { return q.el === e.target; })[0]; if (!s) return;
+      s.visible = e.isIntersecting;
+      if (e.isIntersecting && !s.shown) { s.shown = true; log('on screen: ' + s.id); if (s.onShow) try { s.onShow(); } catch (err) { console.error('[nir] show failed: ' + s.id, err); } }
+    });
+  }, { threshold: 0.15 });
+  scenes.forEach(function (s) { io.observe(s.el); });
+  // plain HTML parts that open when they come into view
+  var io2 = new IntersectionObserver(function (es) { es.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('in'); io2.unobserve(e.target); } }); }, { threshold: 0.2 });
+  document.querySelectorAll('.reveal').forEach(function (el) { if (REDUCED) el.classList.add('in'); else io2.observe(el); });
+  var last = performance.now();
+  function loop(now) {
+    var dt = Math.min(0.05, (now - last) / 1000); last = now;
+    for (var i = 0; i < scenes.length; i++) { var s = scenes[i]; if (s.visible && s.frame) try { s.frame(dt); } catch (e) { console.error('[nir] frame failed: ' + s.id, e); s.frame = null; } }
+    requestAnimationFrame(loop);
+  }
+  requestAnimationFrame(loop);
+  var rt = 0;
+  window.addEventListener('resize', function () { clearTimeout(rt); rt = setTimeout(function () { log('resize'); scenes.forEach(function (s) { if (s.resize) s.resize(); }); }, 150); });
+  log('page ready: ' + scenes.length + ' pictures' + (REDUCED ? ', reduced motion on' : ''));
+}
+
+/* ---------- hero: what your eye sees, and what an 850 nm camera sees ---------- */
+scene('heroCv', function (cv) {
+  var g, vis, nir, t = 0, wipe = 0.5, user = false;
+  function snake(o, w, h, body, blot, belly) {
+    var P = [], x0 = w * 0.36, x1 = w * 0.92, yc = h * 0.42;
+    for (var i = 0; i <= 160; i++) { var u = i / 160; P.push([lerp(x0, x1, u), yc + Math.sin(u * Math.PI * 2.6) * h * 0.07 + u * h * 0.05]); }
+    var bw = Math.max(16, w * 0.018);
+    o.lineCap = 'round'; o.lineJoin = 'round';
+    o.strokeStyle = belly; o.lineWidth = bw * 1.08; o.beginPath(); P.forEach(function (p, i) { if (i) o.lineTo(p[0], p[1] + bw * .18); else o.moveTo(p[0], p[1] + bw * .18); }); o.stroke();
+    o.strokeStyle = body; o.lineWidth = bw; o.beginPath(); P.forEach(function (p, i) { if (i) o.lineTo(p[0], p[1]); else o.moveTo(p[0], p[1]); }); o.stroke();
+    // blotches along the back
+    for (i = 4; i < P.length - 3; i += 6) { var p = P[i]; o.fillStyle = blot; o.beginPath(); o.ellipse(p[0], p[1] - bw * .05, bw * .42, bw * .3, 0, 0, Math.PI * 2); o.fill(); }
+    // head
+    var hd = P[P.length - 1]; o.fillStyle = body; o.beginPath(); o.ellipse(hd[0] + bw * .4, hd[1], bw * .75, bw * .5, .2, 0, Math.PI * 2); o.fill();
+  }
+  function field(kind, w, h) {
+    var c = document.createElement('canvas'); c.width = Math.round(w * g.d); c.height = Math.round(h * g.d);
+    var o = c.getContext('2d'); o.setTransform(g.d, 0, 0, g.d, 0, 0);
+    var r = rng(11), isN = kind === 'nir';
+    o.fillStyle = isN ? '#8E948A' : '#4A4A2C'; o.fillRect(0, 0, w, h);
+    var cols = isN ? ['#E9ECE3', '#D2D7CB', '#BCC2B5', '#F5F6F1'] : ['#6E6B3B', '#8A7E47', '#57602F', '#9C8A55', '#6A5B33'];
+    var n = Math.round(w * h / (isN ? 55 : 55));
+    var behind = n * 0.6 | 0;
+    function blades(count) {
+      for (var i = 0; i < count; i++) {
+        var x = r() * w, y = r() * h * 1.05, len = 14 + r() * 34, lean = (r() - .5) * 14;
+        o.strokeStyle = cols[(r() * cols.length) | 0]; o.lineWidth = .8 + r() * 1.6; o.globalAlpha = .55 + r() * .45;
+        o.beginPath(); o.moveTo(x, y); o.quadraticCurveTo(x + lean * .3, y - len * .6, x + lean, y - len); o.stroke();
+      }
+      o.globalAlpha = 1;
+    }
+    blades(behind);
+    if (isN) snake(o, w, h, '#2E302C', '#1E201D', '#77796F'); else snake(o, w, h, '#7C6438', '#3E2E1A', '#B49A66');
+    blades(n - behind);   // grass in front partly hides the snake, as in the field
+    return c;
+  }
+  function build() { g = fit(cv); vis = field('vis', g.w, g.h); nir = field('nir', g.w, g.h); log('hero fields drawn'); }
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, wx = w * wipe;
+    x.drawImage(nir, 0, 0, w, h);
+    x.save(); x.beginPath(); x.rect(0, 0, wx, h); x.clip(); x.drawImage(vis, 0, 0, w, h); x.restore();
+    var gr = x.createLinearGradient(0, h * .45, 0, h); gr.addColorStop(0, 'rgba(10,26,23,0)'); gr.addColorStop(1, 'rgba(10,26,23,.92)');
+    x.fillStyle = gr; x.fillRect(0, h * .45, w, h * .55);
+    x.fillStyle = '#fff'; x.fillRect(wx - 1, 0, 2, h);
+    x.beginPath(); x.arc(wx, h * .2, 13, 0, Math.PI * 2); x.fill(); x.fillStyle = '#0D211E'; txt(x, '⇆', wx, h * .2 + 5, { size: 14, weight: 800, color: '#0D211E', align: 'center' });
+    var nar = w < 600;   // short labels on a phone so the two do not overlap
+    pill(x, wx - 8, 30, nar ? 'Your eye' : 'What your eye sees', { align: 'right', size: 13 });
+    pill(x, wx + 8, 30, nar ? '850 nm' : 'What an 850 nm camera sees', { align: 'left', size: 13 });
+  }
+  cv.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' || e.buttons) { var r = cv.getBoundingClientRect(); wipe = clamp((e.clientX - r.left) / r.width, 0.04, 0.96); user = true; draw(); } });
+  cv.addEventListener('pointerdown', function (e) { var r = cv.getBoundingClientRect(); wipe = clamp((e.clientX - r.left) / r.width, 0.04, 0.96); user = true; draw(); });
+  build();
+  return {
+    frame: function (dt) { if (user || REDUCED) { if (!this._d) { this._d = 1; draw(); } return; } t += dt; wipe = 0.5 + 0.32 * Math.sin(t * 0.55); draw(); },
+    resize: function () { build(); draw(); },
+    onShow: function () { draw(); }
+  };
+});
+
+/* ---------- who did the work: then (2019) and now (2026) ---------- */
+scene('netCv', function (cv) {
+  var g, mode = 'then', fade = 1, btns = [].slice.call(document.querySelectorAll('#fig-net [data-when]'));
+  var TYPE = { person: '#E8F0EA', nonprofit: '#FFD27A', uni: '#5CC8C3', company: '#FF4D6D', state: '#7CB8F0' };
+  var N = [
+    { id: 'drg', a: null, label: 'Ron Driggers', kind: 'person', then: 'Team lead: UCF professor and part-time at imec', now: 'University of Arizona since 2020; no python work', hub: true },
+    { id: 'imec', a: -2.55, label: 'imec USA, Kissimmee', kind: 'nonprofit', then: 'Nonprofit lab: hyperspectral tests, camera design', now: 'Still open; switched to superconducting electronics' },
+    { id: 'fur', a: -1.9, label: 'Orges Furxhi', kind: 'person', then: 'imec lab manager', now: 'Consultant; no python work since 2021' },
+    { id: 'vac', a: -1.25, label: 'Gonzalo Vaca-Castano', kind: 'person', then: 'imec; built the pixel detector', now: 'Not confirmed; no python work found' },
+    { id: 'ers', a: -0.55, label: 'Extended Reality Systems', kind: 'company', then: 'One-man company (Carl Arvidson): field spectra', now: 'Dissolved by the state, Sept 2021', dead: true },
+    { id: 'uf', a: 0.15, label: 'UF: Frank Mazzotti', kind: 'uni', then: 'Python biologist; supplied snakes and site', now: 'Python ecology and removal; no cameras' },
+    { id: 'fwc', a: 0.85, label: 'FWC (state)', kind: 'state', then: 'Dead pythons; 2021 contract to UCF', now: 'Contract results never published' },
+    { id: 'ucf', a: 1.55, label: 'UCF optics: Hewitt, Renshaw', kind: 'uni', then: '2021 near-infrared vs color study', now: 'Renshaw: Li Zhang 2026 detector (live)', live: true },
+    { id: 'erau', a: 2.35, label: 'Embry-Riddle + WarrenUAS', kind: 'uni', then: 'Separate team: 2023 drone study', now: 'No python work after 2023', separate: true }
+  ];
+  btns.forEach(function (b) { b.addEventListener('click', function () { if (b.dataset.when === mode) return; mode = b.dataset.when; fade = REDUCED ? 1 : 0; pressGroup(btns, b); log('network: ' + mode); }); });
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, cx = w / 2, cy = h / 2, narrow = w < 640;
+    var rx = Math.min(w * (narrow ? .36 : .4), 460), ry = h * (narrow ? .4 : .38);
+    x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+    var k = smooth(fade);
+    N.forEach(function (n) { if (n.hub) { n.x = cx; n.y = cy; } else { n.x = cx + Math.cos(n.a) * rx; n.y = cy + Math.sin(n.a) * ry; } });
+    var hub = N[0];
+    N.forEach(function (n) {
+      if (n.hub) return;
+      var nowDead = mode === 'now' && (n.dead || n.kind === 'person' && n.id !== 'drg');
+      x.strokeStyle = n.separate ? 'rgba(255,255,255,.16)' : mode === 'now' ? (n.live ? 'rgba(92,200,195,.8)' : 'rgba(255,255,255,.09)') : 'rgba(255,255,255,.3)';
+      x.lineWidth = n.live && mode === 'now' ? 2.4 : 1.3; x.setLineDash(n.separate ? [5, 6] : []);
+      x.beginPath(); x.moveTo(hub.x, hub.y); x.lineTo(n.x, n.y); x.stroke(); x.setLineDash([]);
+    });
+    N.forEach(function (n) {
+      var col = TYPE[n.kind], gone = mode === 'now' && n.dead;
+      x.globalAlpha = gone ? .45 : 1;
+      x.fillStyle = col; x.beginPath(); x.arc(n.x, n.y, n.hub ? 12 : 8, 0, Math.PI * 2); x.fill();
+      if (n.live && mode === 'now') { x.strokeStyle = C.teal; x.lineWidth = 2; x.beginPath(); x.arc(n.x, n.y, 14 + 2 * Math.sin(performance.now() / 300), 0, Math.PI * 2); x.stroke(); }
+      var right = n.hub ? false : Math.cos(n.a) >= 0, maxW = narrow ? Math.min(150, w * .34) : 210;
+      var ax = n.hub ? n.x : right ? n.x + 14 : n.x - 14, align = n.hub ? 'center' : right ? 'left' : 'right';
+      var ay = n.hub ? n.y + 30 : n.y - 6;
+      x.font = '700 ' + (narrow ? 12.5 : 13.5) + 'px ' + FONT;
+      txt(x, n.label, clampX(ax, align, x, n.label), ay, { size: narrow ? 12.5 : 13.5, weight: 700, color: gone ? C.dim : C.ink, align: align });
+      x.globalAlpha = (gone ? .45 : 1) * (0.25 + 0.75 * k);
+      x.font = '500 ' + (narrow ? 12 : 12.5) + 'px ' + FONT;
+      var lines = wrap(x, mode === 'then' ? n.then : n.now, maxW);
+      lines.forEach(function (l, i) { txt(x, l, clampX(ax, align, x, l), ay + 16 + i * 15, { size: narrow ? 12 : 12.5, weight: 500, color: n.live && mode === 'now' ? '#A9ECE8' : gone ? C.dim : C.mute, align: align }); });
+      x.globalAlpha = 1;
+    });
+    if (mode === 'now' && k > .5) pill(x, cx, h - 22, 'Only one thread is still live: the 2026 UCF detector', { size: 12.5, color: '#A9ECE8' });
+    else if (k > .5) pill(x, cx, h - 22, 'One hub, many partners. The dashed team worked on its own.', { size: 12.5 });
+  }
+  function clampX(ax, align, x, s) { var w = x.measureText(s).width, W = g.w; if (align === 'left') return Math.min(ax, W - w - 8); if (align === 'right') return Math.max(ax, w + 8); return clamp(ax, w / 2 + 8, W - w / 2 - 8); }
+  g = fit(cv);
+  return {
+    frame: function (dt) { if (fade < 1) fade = Math.min(1, fade + dt * 2.5); draw(); },
+    resize: function () { g = fit(cv); draw(); },
+    onShow: function () { draw(); }
+  };
+});
+
+/* ---------- the spectrum: why pythons look dark above 750 nm ---------- */
+scene('specCv', function (cv) {
+  var g, lam = 550, auto = !REDUCED, t = 0, slider = $('specLam'), read = $('specRead');
+  // python and dead-plant values from the 2019 paper; the live-plant curve is a typical leaf shape (judgment)
+  function live(l) { var green = 0.08 + 0.06 * Math.exp(-Math.pow((l - 550) / 35, 2)); var edge = 0.48 / (1 + Math.exp(-(l - 712) / 13)); return clamp(green * (1 - smooth((l - 690) / 30)) + edge + 0.04, 0, 1); }
+  function deadLo(l) { return lerp(0.05, 0.20, (l - 470) / 430); } function deadHi(l) { return lerp(0.15, 0.60, (l - 470) / 430); }
+  function pyLo(l) { return lerp(0.04, 0.08, (l - 470) / 430); } function pyHi(l) { return lerp(0.08, 0.13, (l - 470) / 430); }
+  function pyMid(l) { return (pyLo(l) + pyHi(l)) / 2; }
+  slider.addEventListener('input', function () { auto = false; lam = +slider.value; log('band ' + lam + ' nm'); draw(); });
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, narrow = w < 640, cw = narrow ? w - 32 : w * .64, x0 = 52, y0 = 26, ch = h - 74, x1 = x0 + cw - 40;
+    function X(l) { return x0 + (l - 450) / 550 * (x1 - x0); } function Y(v) { return y0 + ch - v / 0.7 * ch; }
+    x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+    // axes
+    x.strokeStyle = C.line; x.lineWidth = 1;
+    [0, .1, .2, .3, .4, .5, .6].forEach(function (v) { x.beginPath(); x.moveTo(x0, Y(v)); x.lineTo(x1, Y(v)); x.stroke(); txt(x, Math.round(v * 100) + '%', x0 - 8, Y(v) + 4, { size: 12, align: 'right' }); });
+    [500, 600, 700, 800, 900, 1000].forEach(function (l) { txt(x, l + ' nm', X(l), y0 + ch + 18, { size: 12, align: 'center' }); });
+    txt(x, 'Share of light reflected', x0, y0 - 10, { size: 12.5, weight: 650 });
+    // visible band tint and the 750 nm line
+    var vg = x.createLinearGradient(X(450), 0, X(700), 0); ['#5b4bd6', '#2f8fe0', '#2fbf62', '#e8d23a', '#f08a2a', '#d8393a'].forEach(function (c, i, a) { vg.addColorStop(i / (a.length - 1), c); });
+    x.globalAlpha = .18; x.fillStyle = vg; x.fillRect(X(450), y0 + ch + 2, X(700) - X(450), 5); x.globalAlpha = 1;
+    x.strokeStyle = 'rgba(255,210,122,.6)'; x.setLineDash([4, 5]); x.beginPath(); x.moveTo(X(750), y0); x.lineTo(X(750), y0 + ch); x.stroke(); x.setLineDash([]);
+    pill(x, X(750) + 6, y0 + 14, 'above 750 nm: easy to tell apart', { align: 'left', size: 12, color: C.gold });
+    x.fillStyle = 'rgba(255,255,255,.05)'; x.fillRect(X(900), y0, X(1000) - X(900), ch); txt(x, 'not measured', X(950), Y(.05), { size: 12, align: 'center', color: C.dim });
+    function band(lo, hi, col) { x.beginPath(); for (var l = 470; l <= 900; l += 5) x.lineTo(X(l), Y(hi(l))); for (l = 900; l >= 470; l -= 5) x.lineTo(X(l), Y(lo(l))); x.closePath(); x.fillStyle = col; x.fill(); }
+    function curve(f, col, wdt, dash) { x.beginPath(); for (var l = 470; l <= 900; l += 3) { if (l === 470) x.moveTo(X(l), Y(f(l))); else x.lineTo(X(l), Y(f(l))); } x.strokeStyle = col; x.lineWidth = wdt; x.setLineDash(dash || []); x.stroke(); x.setLineDash([]); }
+    band(deadLo, deadHi, 'rgba(201,169,108,.22)');
+    curve(live, '#7FD07A', 2.6, [6, 4]);
+    band(function (l) { return 0.30; }, function (l) { return 0.40; }, 'rgba(232,240,234,.12)');
+    band(pyLo, pyHi, 'rgba(255,77,109,.35)'); curve(pyMid, C.red, 2);
+    // labels at the right end
+    var lx = X(900) + 6;
+    if (!narrow) {
+      txt(x, 'live plants (typical shape)', lx, Y(live(900)) + 4, { size: 12, color: '#9BE597', weight: 650 });
+      txt(x, 'dead plants', lx, Y(0.42) + 4, { size: 12, color: '#D8BE86', weight: 650 });
+      txt(x, 'python belly', lx, Y(0.35) + 4, { size: 12, color: '#C9D3CC', weight: 650 });
+      txt(x, 'python dark pattern', lx, Y(pyMid(900)) + 4, { size: 12, color: '#FF9DB0', weight: 650 });
+    }
+    // the chosen band
+    x.strokeStyle = '#fff'; x.lineWidth = 1.5; x.beginPath(); x.moveTo(X(lam), y0); x.lineTo(X(lam), y0 + ch); x.stroke();
+    [[live(lam), '#7FD07A'], [pyMid(lam), C.red]].forEach(function (p) { x.fillStyle = p[1]; x.beginPath(); x.arc(X(lam), Y(p[0]), 4.5, 0, Math.PI * 2); x.fill(); });
+    // the little camera view at this band
+    var pv = narrow ? null : { x: x0 + cw + 10, y: y0 + 10, w: w - (x0 + cw + 10) - 18, h: ch - 20 };
+    var plantB = live(lam), pyB = pyMid(lam), contrast = (plantB - pyB) / (plantB + pyB);
+    if (pv) {
+      var gl = Math.round(clamp(plantB / .55, 0, 1) * 235 + 15), pl = Math.round(clamp(pyB / .55, 0, 1) * 235 + 15);
+      x.fillStyle = 'rgb(' + gl + ',' + gl + ',' + gl + ')'; x.fillRect(pv.x, pv.y, pv.w, pv.h);
+      var r = rng(4); x.lineWidth = 1.2;
+      for (var i = 0; i < 260; i++) { var bx = pv.x + r() * pv.w, by = pv.y + r() * pv.h, v = clamp(gl + (r() - .5) * 40, 0, 255) | 0; x.strokeStyle = 'rgb(' + v + ',' + v + ',' + v + ')'; x.beginPath(); x.moveTo(bx, by); x.lineTo(bx + (r() - .5) * 6, by - 8 - r() * 10); x.stroke(); }
+      x.strokeStyle = 'rgb(' + pl + ',' + pl + ',' + pl + ')'; x.lineWidth = Math.max(10, pv.w * .09); x.lineCap = 'round';
+      x.beginPath(); for (i = 0; i <= 40; i++) { var u = i / 40, sx = pv.x + pv.w * (.12 + .76 * u), sy = pv.y + pv.h * (.5 + .18 * Math.sin(u * 7)); if (i) x.lineTo(sx, sy); else x.moveTo(sx, sy); } x.stroke(); x.lineCap = 'butt';
+      x.strokeStyle = C.line; x.lineWidth = 1; x.strokeRect(pv.x + .5, pv.y + .5, pv.w - 1, pv.h - 1);
+      pill(x, pv.x + pv.w / 2, pv.y + pv.h + 18, 'A gray camera at ' + lam + ' nm', { size: 12 });
+    }
+    read.innerHTML = '<b>' + lam + ' nm</b>: plants ' + Math.round(plantB * 100) + '%, python ' + Math.round(pyB * 100) + '%. Contrast: <b>' + (contrast < .25 ? 'low' : contrast < .6 ? 'medium' : 'high') + '</b>';
+    if (+slider.value !== lam) slider.value = lam;
+  }
+  g = fit(cv);
+  return {
+    frame: function (dt) { if (!auto) return; t += dt; lam = Math.round(lerp(480, 880, (1 - Math.cos(t * 0.5)) / 2) / 5) * 5; draw(); },
+    resize: function () { g = fit(cv); draw(); },
+    onShow: function () { if (REDUCED) lam = 850; draw(); }
+  };
+});
+
+/* ---------- how much of the python each method found ---------- */
+scene('pixCv', function (cv) {
+  var g, t = REDUCED ? 99 : 0;
+  var M = [
+    ['Color camera, 16 bands, random forest', 0.244, null, '#E2A04B'],
+    ['Near-infrared camera, 25 bands, random forest', 0.609, null, '#C9D8FF'],
+    ['Hyperspectral, 25 chosen bands', 0.82, '0.815 to 0.826', '#9FB7AC'],
+    ['Hyperspectral, all 150 bands', 0.855, null, '#9FB7AC'],
+    ['Deep network, 3 near-infrared bands', 0.827, '0.827, with 0.5% false alarms', '#FFD27A']
+  ];
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, narrow = w < 640, lw = narrow ? w - 32 : w * .58, x0 = 18, bx = x0, bw = lw - 40, top = 34, rowH = (h - top - 40) / M.length;
+    x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+    txt(x, 'Share of python pixels found (2019 SPIE manuscript, 12 to 15 test images)', x0, 20, { size: 12.5, weight: 650 });
+    M.forEach(function (m, i) {
+      var y = top + i * rowH, a = clamp((t - i * .35) / .8, 0, 1), v = m[1] * smooth(a);
+      txt(x, m[0], bx, y + 14, { size: 12.5, color: C.ink, weight: 600 });
+      x.fillStyle = 'rgba(255,255,255,.06)'; x.fillRect(bx, y + 22, bw, 14);
+      x.fillStyle = m[3]; x.fillRect(bx, y + 22, bw * v, 14);
+      txt(x, (a > .95 ? (m[2] || m[1].toFixed(3)) : v.toFixed(3)), bx + bw * v + 6, y + 33, { size: 12.5, color: m[3], weight: 700 });
+    });
+    // the mask: one python, 82.7% of its pixels found, a few false pixels in the grass
+    if (!narrow) {
+      var px = x0 + lw + 10, pw = w - px - 18, py = top + 6, ph = h - top - 46, cols = 46, rows = 26, cs = Math.min(pw / cols, ph / rows), r = rng(9);
+      var shown = clamp((t - 2.2) / 1.6, 0, 1);
+      for (var j = 0; j < rows; j++) for (var i = 0; i < cols; i++) {
+        var u = i / (cols - 1), yc = rows * (.5 + .28 * Math.sin(u * 6.5)), on = Math.abs(j - yc) < 2.3 && u > .06 && u < .95, q = r();
+        var cx = px + i * cs, cy = py + j * cs;
+        x.fillStyle = on ? '#3B3F38' : '#B9C1B2';
+        if (on && q < .827 * shown) x.fillStyle = '#FFD27A';
+        if (!on && q < .005 * shown) x.fillStyle = '#FF4D6D';   // 0.5% false alarms in the grass
+        x.fillRect(cx, cy, cs - 1, cs - 1);
+      }
+      pill(x, px + cols * cs / 2, py + rows * cs + 18, 'gold: python pixels found; red: false alarms', { size: 12 });
+    }
+  }
+  g = fit(cv);
+  return {
+    frame: function (dt) { if (t < 4.5) { t += dt; draw(); } else if (!this._d) { this._d = 1; draw(); log('animation finish: pixel results'); } },
+    resize: function () { g = fit(cv); draw(); },
+    onShow: function () { draw(); }
+  };
+});
+
+/* ---------- day and night: how far people found the python ---------- */
+scene('rangeCv', function (cv) {
+  var g, mode = 'night', t = 0, btns = [].slice.call(document.querySelectorAll('#fig-range [data-cond]'));
+  var D = {
+    night: { hit: [0.51, 0.77], r: [9.4, 11.6], note: 'Night, 850 nm lights' },
+    day: { hit: [0.69, 0.73], r: [23.7, 28.4], note: 'Day, all images' },
+    glint: { hit: [0.69, 0.73], r: [12.2, 16.3], note: 'Day, sun-glint images removed' }
+  };
+  btns.forEach(function (b) { b.addEventListener('click', function () { mode = b.dataset.cond; t = REDUCED ? 9 : 0; pressGroup(btns, b); log('range: ' + mode); }); });
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, d = D[mode], k = smooth(clamp(t / 1.4, 0, 1));
+    x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+    var x0 = 70, x1 = w - 30, MAXM = 30;
+    function X(m) { return x0 + m / MAXM * (x1 - x0); }
+    txt(x, 'Distance where 13 people found the python half the time', 18, 24, { size: 12.5, weight: 650 });
+    // ruler
+    var ry = h * .62;
+    x.strokeStyle = 'rgba(255,255,255,.25)'; x.lineWidth = 1; x.beginPath(); x.moveTo(X(0), ry); x.lineTo(X(MAXM), ry); x.stroke();
+    for (var m = 0; m <= MAXM; m += 5) { x.beginPath(); x.moveTo(X(m), ry - 4); x.lineTo(X(m), ry + 4); x.stroke(); txt(x, m + ' m', X(m), ry + 20, { size: 12, align: 'center' }); }
+    x.fillStyle = 'rgba(255,255,255,.05)'; x.fillRect(X(17), ry - 70, X(MAXM) - X(17), 70);
+    txt(x, 'beyond the farthest test python (17 m): curve only', X(17) + 6, ry - 56, { size: 12, color: C.dim });
+    // the camera at zero
+    x.fillStyle = C.ink; x.fillRect(X(0) - 26, ry - 12, 18, 12); x.fillRect(X(0) - 10, ry - 9, 6, 6);
+    [[0, 'Color camera', C.vis, ry - 40], [1, 'Near-infrared camera', C.nir, ry - 18]].forEach(function (c) {
+      var v = d.r[c[0]] * k, px = X(v), py = c[3];
+      x.strokeStyle = c[2]; x.lineWidth = 3; x.beginPath(); x.moveTo(X(0), py); x.lineTo(px, py); x.stroke();
+      x.fillStyle = c[2]; x.beginPath(); x.arc(px, py, 6, 0, Math.PI * 2); x.fill();
+      txt(x, c[1] + ': ' + v.toFixed(1) + ' m', px + 10, py + 4, { size: 12.5, color: c[2], weight: 700 });
+    });
+    // hit rates as two big numbers
+    var hy = h * .2 + 8;
+    txt(x, d.note, 18, hy, { size: 13, color: C.ink, weight: 700 });
+    txt(x, 'Hit rate, color: ' + Math.round(d.hit[0] * 100 * k) + '%', 18, hy + 24, { size: 13, color: C.vis, weight: 700 });
+    txt(x, 'Hit rate, near-infrared: ' + Math.round(d.hit[1] * 100 * k) + '%', 18, hy + 44, { size: 13, color: C.nir, weight: 700 });
+    if (k >= 1) pill(x, w - 20, hy + 20, 'near-infrared reached ' + (d.r[1] / d.r[0]).toFixed(2) + ' times as far', { align: 'right', size: 12.5, color: C.gold });
+  }
+  g = fit(cv);
+  return {
+    frame: function (dt) { if (t < 1.6) { t += dt; draw(); } },
+    resize: function () { g = fit(cv); t = 9; draw(); },
+    onShow: function () { if (REDUCED) t = 9; draw(); }
+  };
+});
+
+/* ---------- drone height against detection ---------- */
+scene('droneCv', function (cv) {
+  var g, study = 'erau', t = 0, btns = [].slice.call(document.querySelectorAll('#fig-drone [data-study]'));
+  var S = {
+    erau: { title: 'Embry-Riddle 2023: one dead 3 m python, stretched out, 101 viewers', hs: [3, 6, 9, 12, 15], a: [.99, .98, .92, .96, .59], b: [1, .98, .95, .95, .94], la: 'Color camera', lb: 'Near-infrared (850 nm)', max: 15 },
+    ucf: { title: 'UCF 2024 dissertation: one dead 1.6 m python, 11 viewers, near-infrared only', hs: [10, 20, 30, 40, 50], a: null, b: [1, .993, .955, .827, .682], la: '', lb: 'Near-infrared (780 nm filter)', max: 50 }
+  };
+  btns.forEach(function (b) { b.addEventListener('click', function () { study = b.dataset.study; t = REDUCED ? 9 : 0; pressGroup(btns, b); log('drone study: ' + study); }); });
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, s = S[study], narrow = w < 640, k = clamp(t / 3, 0, 1);
+    x.fillStyle = C.bg; x.fillRect(0, 0, w, h);
+    txt(x, s.title, 18, 22, { size: 12.5, weight: 650 });
+    // left: the drone rising over a snake
+    var lw = narrow ? 0 : w * .26, gy = h - 40;
+    if (!narrow) {
+      x.fillStyle = '#3A3424'; x.fillRect(18, gy, lw - 18, 10);
+      var hh = lerp(s.hs[0], s.max, k), dy = lerp(gy - 40, 56, (hh - s.hs[0]) / (s.max - s.hs[0])), dx = 18 + (lw - 18) / 2;
+      x.strokeStyle = 'rgba(201,216,255,.25)'; x.beginPath(); x.moveTo(dx, dy + 8); x.lineTo(dx - 40 * (1 + k), gy); x.lineTo(dx + 40 * (1 + k), gy); x.closePath(); x.fillStyle = 'rgba(201,216,255,.07)'; x.fill(); x.stroke();
+      x.strokeStyle = '#2E302C'; x.lineWidth = Math.max(2, 7 - k * 4.5); x.beginPath(); for (var i = 0; i <= 20; i++) { var u = i / 20; var sx = dx - 22 + u * 44, sy = gy - 4 + Math.sin(u * 8) * 2; if (i) x.lineTo(sx, sy); else x.moveTo(sx, sy); } x.stroke();
+      x.fillStyle = C.ink; x.fillRect(dx - 14, dy - 3, 28, 6); x.beginPath(); x.ellipse(dx - 16, dy - 6, 9, 2.5, 0, 0, Math.PI * 2); x.ellipse(dx + 16, dy - 6, 9, 2.5, 0, 0, Math.PI * 2); x.fill();
+      pill(x, dx, dy - 22, Math.round(hh) + ' m up', { size: 12 });
+    }
+    // right: the chart
+    var cx0 = (narrow ? 50 : lw + 56), cx1 = w - 24, cy0 = 44, cy1 = h - 44;
+    function X(v) { return cx0 + (v - s.hs[0]) / (s.max - s.hs[0]) * (cx1 - cx0); } function Y(p) { return cy1 - (p - .5) / .5 * (cy1 - cy0); }
+    x.strokeStyle = C.line; x.lineWidth = 1;
+    [.5, .6, .7, .8, .9, 1].forEach(function (p) { x.beginPath(); x.moveTo(cx0, Y(p)); x.lineTo(cx1, Y(p)); x.stroke(); txt(x, Math.round(p * 100) + '%', cx0 - 8, Y(p) + 4, { size: 12, align: 'right' }); });
+    s.hs.forEach(function (hv) { txt(x, hv + ' m', X(hv), cy1 + 18, { size: 12, align: 'center' }); });
+    function line(arr, col) {
+      var n = arr.length, upto = k * (n - 1);
+      x.strokeStyle = col; x.lineWidth = 2.6; x.beginPath();
+      for (var i = 0; i < n; i++) { if (i > upto + 1e-6) { var f = upto - (i - 1); x.lineTo(lerp(X(s.hs[i - 1]), X(s.hs[i]), f), lerp(Y(arr[i - 1]), Y(arr[i]), f)); break; } if (i) x.lineTo(X(s.hs[i]), Y(arr[i])); else x.moveTo(X(s.hs[i]), Y(arr[i])); }
+      x.stroke();
+      for (i = 0; i < n; i++) if (i <= upto + 1e-6) { x.fillStyle = col; x.beginPath(); x.arc(X(s.hs[i]), Y(arr[i]), 4, 0, Math.PI * 2); x.fill(); }
+    }
+    if (s.a) line(s.a, C.vis);
+    line(s.b, C.nir);
+    if (k >= 1) {
+      var lastI = s.hs.length - 1;
+      if (s.a) { pill(x, X(15) - 8, Y(.59) + 4, 'color: 59%', { align: 'right', size: 12, color: C.vis }); pill(x, X(15) - 8, Y(.94) - 16, 'near-infrared: 94%', { align: 'right', size: 12, color: C.nir }); pill(x, X(9), Y(.72), 'below 15 m the two cameras tie', { size: 12 }); }
+      else { pill(x, X(50) - 8, Y(.682) + 16, '68% at 50 m', { align: 'right', size: 12, color: C.nir }); pill(x, X(30), Y(.6), '80% detection up to 42.7 m; about 10% false alarms', { size: 12 }); }
+    }
+    txt(x, s.lb, cx1, cy0 - 14, { size: 12.5, color: C.nir, weight: 700, align: 'right' });
+    if (s.a) txt(x, s.la, cx1 - x.measureText(s.lb).width - 18, cy0 - 14, { size: 12.5, color: C.vis, weight: 700, align: 'right' });
+  }
+  g = fit(cv);
+  return {
+    frame: function (dt) { if (t < 3.2) { t += dt; draw(); } },
+    resize: function () { g = fit(cv); t = 9; draw(); },
+    onShow: function () { if (REDUCED) t = 9; draw(); }
+  };
+});
+
+/* ---------- the nest opening: color camera against an 850 nm camera ---------- */
+scene('nestCv', function (cv) {
+  var g, vis, nir, t = 0, wipe = 0.5, user = false;
+  // where things sit, as shares of the picture
+  var OPEN = { x: .62, y: .52 }, CRUSH = { rx: .13, ry: .17 }, TUFTS = [[.16, .28], [.3, .74], [.86, .22], [.9, .8], [.44, .18]];
+  function kindAt(u, v, w, h) {
+    var dx = (u - OPEN.x) / CRUSH.rx, dy = (v - OPEN.y) / CRUSH.ry * (h / w) * 1.6, d = Math.sqrt(dx * dx + dy * dy);
+    if (d < .28) return 'soil';
+    if (d < 1) return 'crushed';
+    for (var i = 0; i < TUFTS.length; i++) { var tx = (u - TUFTS[i][0]) / .05, ty = (v - TUFTS[i][1]) / .07; if (tx * tx + ty * ty < 1) return 'dead'; }
+    return 'live';
+  }
+  var COL = {
+    vis: { base: '#53582F', live: ['#5F6B35', '#7B7A40', '#6D6A3A', '#8C8350'], dead: ['#9C8456', '#8A7550', '#A89262'], crushed: ['#64703A', '#76773F', '#6A6A38', '#7E7A46'], soil: '#4A3A28' },
+    nir: { base: '#B9BEB2', live: ['#E6E9DF', '#D4D9CC', '#F2F3EE'], dead: ['#9A9C92', '#8C8E85', '#A6A89E'], crushed: ['#6F716A', '#7C7E76', '#62645E'], soil: '#55524A' }
+  };
+  function field(mode, w, h) {
+    var c = document.createElement('canvas'); c.width = Math.round(w * g.d); c.height = Math.round(h * g.d);
+    var o = c.getContext('2d'); o.setTransform(g.d, 0, 0, g.d, 0, 0);
+    var P = COL[mode], r = rng(21); o.fillStyle = P.base; o.fillRect(0, 0, w, h);
+    var n = Math.round(w * h / 22);
+    for (var i = 0; i < n; i++) {
+      var x = r() * w, y = r() * h, k = kindAt(x / w, y / h, w, h);
+      if (k === 'soil') { o.fillStyle = P.soil; o.globalAlpha = .7; o.fillRect(x, y, 3, 3); o.globalAlpha = 1; continue; }
+      var cols = P[k], len = k === 'crushed' ? 9 + r() * 8 : 5 + r() * 7, ang;
+      if (k === 'crushed') { ang = Math.atan2(y - OPEN.y * h, x - OPEN.x * w) + (r() - .5) * 1.6; } else ang = r() * Math.PI * 2;   // flattened grass lies away from the opening
+      o.strokeStyle = cols[(r() * cols.length) | 0]; o.lineWidth = k === 'crushed' ? 1.8 : 1.2 + r() * .8; o.globalAlpha = .6 + r() * .4;
+      o.beginPath(); o.moveTo(x, y); o.lineTo(x + Math.cos(ang) * len, y + Math.sin(ang) * len); o.stroke();
+    }
+    o.globalAlpha = 1;
+    o.fillStyle = '#141210'; o.beginPath(); o.ellipse(OPEN.x * w, OPEN.y * h, w * .022, h * .03, .3, 0, Math.PI * 2); o.fill();   // the burrow opening
+    return c;
+  }
+  function build() { g = fit(cv); vis = field('vis', g.w, g.h); nir = field('nir', g.w, g.h); log('nest fields drawn'); }
+  function draw() {
+    var x = g.x, w = g.w, h = g.h, wx = w * wipe;
+    x.drawImage(nir, 0, 0, w, h);
+    x.save(); x.beginPath(); x.rect(0, 0, wx, h); x.clip(); x.drawImage(vis, 0, 0, w, h); x.restore();
+    x.fillStyle = '#fff'; x.fillRect(wx - 1, 0, 2, h);
+    pill(x, wx - 10, 24, 'Color camera', { align: 'right', size: 13 });
+    pill(x, wx + 10, 24, '850 nm camera', { align: 'left', size: 13 });
+    // the flags, drawn on both halves
+    var ox = OPEN.x * w, oy = OPEN.y * h, rx = CRUSH.rx * w * 1.02, ry = CRUSH.ry * h * 1.02 * .62;
+    x.strokeStyle = 'rgba(255,210,122,.95)'; x.lineWidth = 2; x.setLineDash([6, 5]); x.beginPath(); x.ellipse(ox, oy, rx, Math.min(ry, rx * .9), 0, 0, Math.PI * 2); x.stroke(); x.setLineDash([]);
+    pill(x, ox, oy + Math.min(ry, rx * .9) + 20, 'crushed grass at the opening', { size: 12.5, color: C.gold });
+    [TUFTS[0], TUFTS[3]].forEach(function (tf) { x.strokeStyle = 'rgba(255,179,193,.85)'; x.lineWidth = 1.5; x.beginPath(); x.arc(tf[0] * w, tf[1] * h, Math.max(18, w * .045), 0, Math.PI * 2); x.stroke(); });
+    pill(x, TUFTS[0][0] * w, TUFTS[0][1] * h - Math.max(18, w * .045) - 14, 'dead tuft: a false flag', { size: 12, color: '#FFB3C1' });
+    pill(x, w - 12, h - 20, 'The coil is under cover: no camera sees it', { align: 'right', size: 12, color: C.mute });
+  }
+  cv.addEventListener('pointermove', function (e) { if (e.pointerType === 'mouse' || e.buttons) { var r = cv.getBoundingClientRect(); wipe = clamp((e.clientX - r.left) / r.width, 0.04, 0.96); user = true; draw(); } });
+  cv.addEventListener('pointerdown', function (e) { var r = cv.getBoundingClientRect(); wipe = clamp((e.clientX - r.left) / r.width, 0.04, 0.96); user = true; draw(); });
+  build();
+  return {
+    frame: function (dt) { if (user || REDUCED) { if (!this._d) { this._d = 1; draw(); } return; } t += dt; wipe = 0.5 + 0.34 * Math.sin(t * 0.6); draw(); },
+    resize: function () { build(); draw(); },
+    onShow: function () { draw(); }
+  };
+});
+
+start();
+})();
+</script></body></html>
